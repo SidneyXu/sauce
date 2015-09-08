@@ -1,0 +1,4 @@
+rootProject.name = 'sauce'
+include 'sauce-core'
+include 'sauce-android'
+

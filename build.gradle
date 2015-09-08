@@ -1,0 +1,33 @@
+group 'com.bookislife'
+version '0.0.1-SNAPSHOT'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.2.3'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+subprojects{
+    apply plugin: 'maven'
+    apply plugin: 'signing'
+}
+
+ext {
+    compileSdkVersion = 22
+    buildToolsVersion = "22.0.1"
+
+    minSdkVersion = 9
+    targetSdkVersion = 22
+
+    appcompatVersion = "22.2.1"
+
+}
