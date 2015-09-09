@@ -9,7 +9,7 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode VERSION_CODE
+        versionCode 1
         versionName VERSION_NAME
     }
     buildTypes {
@@ -80,10 +80,11 @@ android.libraryVariants.all { variant ->
 //    from androidJavadocs.destinationDir
 //}
 //
-//task androidSourcesJar(type: Jar) {
-//    classifier = 'sources'
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
 //    from android.sourceSets.main.java.srcDirs
-//}
+    from android.sourceSets.main.java.sourceFiles
+}
 
 task zipRelease(type: Zip) {
     from localReleaseDest
@@ -100,8 +101,9 @@ generateRelease.dependsOn(uploadArchives)
 generateRelease.dependsOn(zipRelease)
 
 artifacts {
-    archives androidSourcesJar
-    archives androidJavadocsJar
+//    archives androidSourcesJar
+//    archives androidJavadocsJar
+
 }
 
 def getReleaseRepositoryUrl() {
@@ -181,8 +183,8 @@ uploadArchives {
 
 def isReleaseBuild = !VERSION_NAME.endsWith('-SNAPSHOT')
 
-signing {
-    required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
-}
+//signing {
+//    required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
+//    sign configurations.archives
+//}
 
