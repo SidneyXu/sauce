@@ -21,64 +21,68 @@ def getRepositoryPassword() {
     return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
 }
 
-uploadArchives {
+afterEvaluate { project ->
+    uploadArchives {
 
-    repositories {
-        flatDir {
-            dirs "file://${localReleaseDest}"
-        }
-
-        mavenDeployer {
-            beforeDeployment {
-                MavenDeployment deployment -> signing.signPom(deployment)
+        repositories {
+            flatDir {
+                dirs "file://${localReleaseDest}"
             }
 
-            repository(url: getReleaseRepositoryUrl()) {
-                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
-            }
-            snapshotRepository(url: getSnapshotRepositoryUrl()) {
-                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
-            }
+            mavenDeployer {
+//            beforeDeployment {
+//                MavenDeployment deployment -> signing.signPom(deployment)
+//            }
 
-            pom.groupId = POM_GROUP_ID
-            pom.artifactId = POM_ARTIFACT_ID
-            pom.version = VERSION_NAME
+//            repository(url: "file://${localReleaseDest}")
 
-            pom.project {
-                name POM_NAME
-                packaging POM_PACKAGING
-                description POM_DESCRIPTION
-                url POM_URL
-                inceptionYear POM_INCEPTION_YEAR
+//            repository(url: getReleaseRepositoryUrl()) {
+//                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+//            }
+//            snapshotRepository(url: getSnapshotRepositoryUrl()) {
+//                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+//            }
 
-                scm {
-                    url POM_SCM_URL
-                    connection POM_SCM_CONNECTION
-                    developerConnection POM_SCM_DEV_CONNECTION
-                }
+                pom.groupId = POM_GROUP_ID
+                pom.artifactId = POM_ARTIFACT_ID
+                pom.version = VERSION_NAME
 
-                licenses {
-                    license {
-                        name POM_LICENCE_NAME
-                        url POM_LICENCE_URL
-                        distribution POM_LICENCE_DIST
+                pom.project {
+                    name POM_NAME
+                    packaging POM_PACKAGING
+                    description POM_DESCRIPTION
+                    url POM_URL
+                    inceptionYear POM_INCEPTION_YEAR
+
+                    scm {
+                        url POM_SCM_URL
+                        connection POM_SCM_CONNECTION
+                        developerConnection POM_SCM_DEV_CONNECTION
+                    }
+
+                    licenses {
+                        license {
+                            name POM_LICENCE_NAME
+                            url POM_LICENCE_URL
+                            distribution POM_LICENCE_DIST
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id POM_DEVELOPER_ID
+                            name POM_DEVELOPER_NAME
+                        }
                     }
                 }
 
-                developers {
-                    developer {
-                        id POM_DEVELOPER_ID
-                        name POM_DEVELOPER_NAME
-                    }
-                }
             }
-
-            repository(url: "file://${localReleaseDest}")
         }
     }
-}
 
-signing {
-    required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
+//signing {
+//    required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
+//    sign configurations.archives
+//}
+
 }

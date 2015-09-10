@@ -69,7 +69,7 @@ public abstract class FileHandle extends SourceHandle {
 
     public abstract List<String[]> readCSV(char separator) throws IOException;
 
-    public abstract <T extends FileHandle> void copyLarge(T target) throws IOException;
+    public abstract void copyLarge(FileHandle target) throws IOException;
 
     public abstract List<String> readLines() throws IOException;
 
@@ -78,8 +78,6 @@ public abstract class FileHandle extends SourceHandle {
     public abstract void transferTo(OutputStream outputStream) throws IOException;
 
     public abstract void transferFrom(InputStream inputStream) throws IOException;
-
-    public abstract boolean mkDirs();
 
     public abstract boolean createNewFile();
 

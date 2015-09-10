@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,7 +52,7 @@ public class AndroidFileHandle extends FileHandle {
 
     @Override
     public boolean mkdirs() {
-        return false;
+        return file.mkdirs();
     }
 
     @Override
@@ -279,7 +280,7 @@ public class AndroidFileHandle extends FileHandle {
     }
 
     @Override
-    public <T extends FileHandle> void copyLarge(T target) throws IOException {
+    public void copyLarge(FileHandle target) throws IOException {
         InputStream in = getInputStream();
         OutputStream out = target.getOutputStream(false);
         if (in instanceof FileInputStream
@@ -293,12 +294,59 @@ public class AndroidFileHandle extends FileHandle {
 
     @Override
     public List<String> readLines() throws IOException {
-        return null;
+        InputStream in = null;
+        InputStreamReader isr = null;
+        BufferedReader reader = null;
+        List<String> lines = new ArrayList<>();
+        try {
+            in = getInputStream();
+            isr = new InputStreamReader(in);
+            reader = new BufferedReader(isr);
+            String s;
+            while ((s = reader.readLine()) != null) {
+                lines.add(s);
+            }
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
+            if (isr != null) {
+                isr.close();
+            }
+            if (in != null) {
+                in.close();
+            }
+        }
+        return lines;
     }
 
     @Override
     public void writeLines(List<String> lines) throws IOException {
-
+        OutputStream out = null;
+        OutputStreamWriter osw = null;
+        BufferedWriter writer = null;
+        try {
+            out = getOutputStream(false);
+            osw = new OutputStreamWriter(out);
+            writer = new BufferedWriter(osw);
+            int size = lines.size();
+            for (int i = 0; i < size; i++) {
+                writer.write(lines.get(i));
+                if (i != size - 1) {
+                    writer.newLine();
+                }
+            }
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
+            if (osw != null) {
+                osw.close();
+            }
+            if (out != null) {
+                out.close();
+            }
+        }
     }
 
     @Override
@@ -311,11 +359,6 @@ public class AndroidFileHandle extends FileHandle {
     public void transferFrom(InputStream inputStream) throws IOException {
         OutputStream outputStream = getOutputStream(false);
         IOUtils.copyTo(inputStream, outputStream, DEFAULT_BUFFER_SIZE);
-    }
-
-    @Override
-    public boolean mkDirs() {
-        return notExist() && file.mkdirs();
     }
 
     @Override
@@ -378,7 +421,7 @@ public class AndroidFileHandle extends FileHandle {
     @Override
     public boolean copyDirectoryTo(FileHandle target) {
         if (isDirectory() && exists()) {
-            target.mkDirs();
+            target.mkdirs();
             FileHandle[] handles = listHandles();
             for (FileHandle fh : handles) {
                 FileHandle newHandle = new AndroidFileHandle(new File(target.toFile(),

@@ -1,7 +1,9 @@
-group 'com.bookislife'
-version '0.0.1-SNAPSHOT'
-
 apply plugin: 'java'
+
+ext.localReleaseDest = "${buildDir}/release/${VERSION_NAME}"
+
+group = POM_GROUP_ID
+version = VERSION_NAME
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -15,3 +17,30 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
+
+task javadocs(type: Javadoc) {
+    source = sourceSets.main.allJava
+    options.encoding = "UTF-8"
+}
+
+task javadocsJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
+}
+
+artifacts {
+    archives javadocsJar
+    archives sourcesJar
+}
+
+try{
+
+}catch (e){
+
+}
+apply from: '../mvn_publish.gradle'

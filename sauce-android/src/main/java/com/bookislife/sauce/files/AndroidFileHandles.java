@@ -27,11 +27,13 @@ public final class AndroidFileHandles implements FileHandles {
 
     @Override
     public FileHandle absolute(FileHandle dirHandle, String path) {
-        return null;
+        File file = new File(dirHandle.toFile(), path);
+        return new AndroidFileHandle(file);
     }
 
     @Override
     public FileHandle absolute(String first, String... more) {
+        //TODO
         return null;
     }
 
@@ -55,6 +57,7 @@ public final class AndroidFileHandles implements FileHandles {
 
     @Override
     public FileHandle internal(String first, String... more) {
+        //TODO
         return null;
     }
 }
