@@ -2,8 +2,10 @@ package com.bookislife.sauce.files;
 
 import com.bookislife.sauce.BaseTestCase;
 import com.bookislife.sauce.Sauce;
+import org.assertj.core.api.iterable.Extractor;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,31 +30,126 @@ public class AndroidFileHandleTest extends BaseTestCase {
     }
 
     public void testMkdirs() throws Exception {
+        String path = testDirectory + "/" + "tempDirectory";
+        FileHandle handle = files.sdcard(path);
 
+        assertThat(handle.notExist()).isEqualTo(true);
+        assertThat(handle.isDirectory()).isEqualTo(false);
+        assertThat(handle.isFile()).isEqualTo(false);
+
+        handle.mkdirs();
+
+        assertThat(handle.exists()).isEqualTo(true);
+        assertThat(handle.isDirectory()).isEqualTo(true);
+        assertThat(handle.isFile()).isEqualTo(false);
+
+        handle.deleteDirectory();
+
+        assertThat(handle.notExist()).isEqualTo(true);
+        assertThat(handle.isDirectory()).isEqualTo(false);
+        assertThat(handle.isFile()).isEqualTo(false);
     }
 
-    public void testIsDirectory() throws Exception {
+    public void testCreateNewFile() throws Exception {
+        String path = testDirectory + "/" + "temp";
+        FileHandle handle = files.sdcard(path);
 
-    }
+        assertThat(handle.notExist()).isEqualTo(true);
+        assertThat(handle.isDirectory()).isEqualTo(false);
+        assertThat(handle.isFile()).isEqualTo(false);
 
-    public void testIsFile() throws Exception {
+        handle.createNewFile();
 
-    }
+        assertThat(handle.exists()).isEqualTo(true);
+        assertThat(handle.isDirectory()).isEqualTo(false);
+        assertThat(handle.isFile()).isEqualTo(true);
 
-    public void testExists() throws Exception {
+        handle.delete();
 
-    }
-
-    public void testNotExist() throws Exception {
-
+        assertThat(handle.notExist()).isEqualTo(true);
+        assertThat(handle.isDirectory()).isEqualTo(false);
+        assertThat(handle.isFile()).isEqualTo(false);
     }
 
     public void testToFile() throws Exception {
-
+        String path = testDirectory + "/" + "foo.txt";
+        FileHandle handle = files.sdcard(path);
+        assertThat(handle.toFile().getName()).isEqualTo("foo.txt");
     }
 
     public void testListFiles() throws Exception {
+        /*
+            root/
+                dir1/
+                    dir1_1/
+                        text1_1.txt
+                    text1.txt
+                dir2/
+                    text2.txt
+         */
+        String path1 = testDirectory + "/" + "dir1";
+        String path1_1 = testDirectory + "/" + "dir1_1";
+        String path2 = testDirectory + "/" + "dir2";
+        String file1 = "text1.txt";
+        String file1_1 = "text1_1.txt";
+        String file2 = "text2.txt";
 
+        rootHandle.deleteChildren();
+
+        FileHandle handle1 = files.sdcard(path1);
+        FileHandle handle1_1 = files.absolute(handle1, path1_1);
+        FileHandle handle2 = files.sdcard(path2);
+        handle1_1.mkdirs();
+        handle2.mkdirs();
+
+        FileHandle fileHandle1 = files.absolute(handle1, file1);
+        FileHandle fileHandle1_1 = files.absolute(handle1_1, file1_1);
+        FileHandle fileHandle2 = files.absolute(handle2, file2);
+        fileHandle1.createNewFile();
+        fileHandle1_1.createNewFile();
+        fileHandle2.createNewFile();
+
+        assertThat(rootHandle.listFiles()).hasSize(2)
+                .extracting(new Extractor<File, String>() {
+                    @Override
+                    public String extract(final File file) {
+                        return file.getName();
+                    }
+                }).containsExactly("dir1", "dir2");
+        assertThat(handle1.listFiles()).hasSize(2);
+        assertThat(handle1_1.listFiles()).hasSize(1);
+        assertThat(handle2.listFiles()).hasSize(1);
+
+        handle1.deleteChildren();
+        assertThat(rootHandle.listFiles()).hasSize(2)
+                .extracting(new Extractor<File, String>() {
+                    @Override
+                    public String extract(final File file) {
+                        return file.getName();
+                    }
+                }).containsExactly("dir1", "dir2");
+
+        handle2.delete();
+        assertThat(rootHandle.listFiles()).hasSize(2)
+                .extracting(new Extractor<File, String>() {
+                    @Override
+                    public String extract(final File file) {
+                        return file.getName();
+                    }
+                }).containsExactly("dir1", "dir2");
+
+        handle2.deleteDirectory();
+        assertThat(rootHandle.listFiles()).hasSize(1)
+                .extracting(new Extractor<File, String>() {
+                    @Override
+                    public String extract(final File file) {
+                        return file.getName();
+                    }
+                }).containsExactly("dir1");
+
+        rootHandle.deleteChildren();
+
+        assertThat(rootHandle.listFiles()).hasSize(0);
     }
 
     public void testListHandles() throws Exception {
@@ -68,14 +165,6 @@ public class AndroidFileHandleTest extends BaseTestCase {
     }
 
     public void testDeleteDirectory() throws Exception {
-
-    }
-
-    public void testGetInputStream() throws Exception {
-
-    }
-
-    public void testGetOutputStream() throws Exception {
 
     }
 
@@ -213,10 +302,6 @@ public class AndroidFileHandleTest extends BaseTestCase {
         targetHandle.transferFrom(sourceHandle.getInputStream());
 
         assertThat(targetHandle.readString()).isEqualTo(expected);
-    }
-
-    public void testCreateNewFile() throws Exception {
-
     }
 
     public void testRenameTo() throws Exception {

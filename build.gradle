@@ -1,5 +1,5 @@
-group 'com.bookislife'
-version '0.0.1-SNAPSHOT'
+//group 'com.bookislife'
+//version '0.0.1-SNAPSHOT'
 
 buildscript {
     repositories {
@@ -16,7 +16,7 @@ allprojects {
     }
 }
 
-subprojects{
+subprojects {
     apply plugin: 'maven'
     apply plugin: 'signing'
 }
