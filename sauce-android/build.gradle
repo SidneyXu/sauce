@@ -70,16 +70,16 @@ android.libraryVariants.all { variant ->
 
 }
 
-//task androidJavadocs(type: Javadoc) {
-//    source = android.sourceSets.main.java.srcDirs
-//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-//}
-//
-//task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
-//    classifier = 'javadoc'
-//    from androidJavadocs.destinationDir
-//}
-//
+task androidJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+    classifier = 'javadoc'
+    from androidJavadocs.destinationDir
+}
+
 task androidSourcesJar(type: Jar) {
     classifier = 'sources'
 //    from android.sourceSets.main.java.srcDirs
@@ -101,7 +101,10 @@ generateRelease.dependsOn(uploadArchives)
 generateRelease.dependsOn(zipRelease)
 
 artifacts {
-//    archives androidSourcesJar
-//    archives androidJavadocsJar
+    archives androidSourcesJar
+    archives androidJavadocsJar
 
 }
+
+
+apply from: '../mvn_publish.gradle'

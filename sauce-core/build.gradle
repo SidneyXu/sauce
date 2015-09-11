@@ -38,9 +38,4 @@ artifacts {
     archives sourcesJar
 }
 
-try{
-
-}catch (e){
-
-}
 apply from: '../mvn_publish.gradle'
