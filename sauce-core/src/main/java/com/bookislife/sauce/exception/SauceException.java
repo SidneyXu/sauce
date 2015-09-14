@@ -1,7 +1,10 @@
 package com.bookislife.sauce.exception;
 
 /**
- * Created by mrseasons on 2015/09/08.
+ * The class represents the exception occurs when using sauce Library.
+ * <p/>
+ *
+ * @author SidneyXu
  */
 public class SauceException {
 

@@ -6,10 +6,19 @@ import com.bookislife.sauce.files.FileHandle;
 import java.io.File;
 
 /**
- * Created by mrseasons on 2015/09/10.
+ * The class represents source in the sauce Library.
+ * <p></p>The source can be Files, Http Requests or any others.
+ *
+ * @author SidneyXu
  */
-public class Source {
+public abstract class Source {
 
+    /**
+     * Construct the FileHandle with the specified file.
+     *
+     * @param file the specified file
+     * @return a FileHandle
+     */
     public static FileHandle fromFile(File file) {
         FileHandle handle = Sauce.files.absolute(file);
         return handle;

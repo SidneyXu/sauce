@@ -1,7 +1,6 @@
 package com.bookislife.sauce;
 
 import android.test.InstrumentationTestCase;
-import static org.assertj.core.api.Assertions.*;
 
 /**
  * Created by mrseasons on 2015/09/08.

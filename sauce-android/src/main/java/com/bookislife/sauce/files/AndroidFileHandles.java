@@ -33,8 +33,18 @@ public final class AndroidFileHandles implements FileHandles {
 
     @Override
     public FileHandle absolute(String first, String... more) {
-        //TODO
-        return null;
+        StringBuilder builder = new StringBuilder(first);
+        if (!first.endsWith("/")) {
+            builder.append("/");
+        }
+        int len = more.length;
+        for (int i = 0; i < len; i++) {
+            builder.append(more[i]);
+            if (i != len - 1) {
+                builder.append("/");
+            }
+        }
+        return absolute(builder.toString());
     }
 
     @Override
@@ -55,9 +65,23 @@ public final class AndroidFileHandles implements FileHandles {
         return internal(path);
     }
 
+    public FileHandle assets(String first, String... more) {
+        return assets(first, more);
+    }
+
     @Override
     public FileHandle internal(String first, String... more) {
-        //TODO
-        return null;
+        StringBuilder builder = new StringBuilder(first);
+        if (!first.endsWith("/")) {
+            builder.append("/");
+        }
+        int len = more.length;
+        for (int i = 0; i < len; i++) {
+            builder.append(more[i]);
+            if (i != len - 1) {
+                builder.append("/");
+            }
+        }
+        return internal(builder.toString());
     }
 }

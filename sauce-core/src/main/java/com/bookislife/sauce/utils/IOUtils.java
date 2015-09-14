@@ -5,33 +5,65 @@ import java.nio.channels.FileChannel;
 import java.util.zip.ZipInputStream;
 
 /**
- * Created by mrseasons on 2015/09/08.
+ * The class is used to make easier to handle some io operations.
+ *
+ * @author SidneyXu
  */
 public class IOUtils {
 
+    /**
+     * Delete the specified file is possible.
+     *
+     * @param file the file to be deleted
+     * @return True if succeed. False otherwise.
+     */
     public static boolean deleteFile(final File file) {
         return file.exists() && file.delete();
     }
 
+    /**
+     * Delete the specified file recursively. Both available for file and directory.
+     *
+     * @param file the file to be deleted
+     */
     public static void recursiveDelete(final File file) {
         if (file.isDirectory() && file.exists()) {
             File[] files = file.listFiles();
-            for (File f : files) {
-                recursiveDelete(f);
+            if (files != null) {
+                for (File f : files) {
+                    recursiveDelete(f);
+                }
             }
         }
         deleteFile(file);
     }
 
+    /**
+     * Delete the children of the specified file recursively. Only available for file.
+     *
+     * @param root the root directory.
+     */
     public static void deleteChildren(final File root) {
         if (root.isDirectory() && root.exists()) {
             File[] files = root.listFiles();
-            for (File f : files) {
-                recursiveDelete(f);
+            if (files != null) {
+                for (File f : files) {
+                    recursiveDelete(f);
+                }
             }
         }
     }
 
+    /**
+     * Copy the data from the inputStream to the outputStream.
+     * <p></p>The passed inputStream and outputStream will be closed automatically before the
+     * method returned.(Expected the inputStream is an ZipInputStream.)
+     *
+     * @param in         the inputStream to provide the data
+     * @param out        the outputStream to write to
+     * @param bufferSize the buffer size when copying
+     * @throws IOException
+     */
     public static void copyTo(final InputStream in, final OutputStream out,
                               final int bufferSize)
             throws IOException {
@@ -52,6 +84,15 @@ public class IOUtils {
         }
     }
 
+    /**
+     * Copy the data from the fileInputStream to the fileOutputStream by fileChannel.
+     * <p></p>The passed inputStream and outputStream will be closed automatically before the
+     * method returned.
+     *
+     * @param in  the inputStream to provide the data
+     * @param out the outputStream to write to
+     * @throws IOException
+     */
     public static void copyLarge(final FileInputStream in, final FileOutputStream out)
             throws IOException {
         FileChannel readChannel = null;

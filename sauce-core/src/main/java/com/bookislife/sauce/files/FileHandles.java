@@ -3,7 +3,9 @@ package com.bookislife.sauce.files;
 import java.io.File;
 
 /**
- * Created by mrseasons on 2015/09/08.
+ * The class is used to construct FileHandle instance.
+ *
+ * @author SidneyXu
  */
 public interface FileHandles {
     FileHandle absolute(String path);

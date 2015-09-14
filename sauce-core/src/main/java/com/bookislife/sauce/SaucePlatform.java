@@ -3,17 +3,30 @@ package com.bookislife.sauce;
 import com.bookislife.sauce.files.FileHandles;
 
 /**
- * Created by mrseasons on 2015/09/08.
+ * The class represents a specified platform of the sauce Library.
+ *
+ * @author SidneyXu
  */
 public abstract class SaucePlatform {
 
+    /**
+     * A util to handle constructor file handle of the specified platform.
+     */
     public final FileHandles files;
 
     public static final String VERSION = "0.0.1";
 
+    /**
+     * Constructor the sauce platform.
+     */
     public SaucePlatform() {
         files = getFiles();
     }
 
+    /**
+     * Overrides this to get the FileHandles of the specified platform.
+     *
+     * @return the FileHandles instance of specified platform
+     */
     protected abstract FileHandles getFiles();
 }

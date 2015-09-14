@@ -3,7 +3,9 @@ package com.bookislife.sauce;
 import com.bookislife.sauce.files.FileHandles;
 
 /**
- * Created by mrseasons on 2015/09/08.
+ * The Sauce class is used to initialize sauce library.
+ *
+ * @author SidneyXu
  */
 public class Sauce {
 
@@ -11,6 +13,9 @@ public class Sauce {
 
     private static SaucePlatform platform;
 
+    /**
+     * A util to handle constructor file handle on the specified platform.
+     */
     public static FileHandles files;
 
     public static void initialize(SaucePlatform platform) {

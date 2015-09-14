@@ -184,6 +184,25 @@ public class AndroidFileHandle extends FileHandle {
     }
 
     @Override
+    public boolean tryWriteBytes(final byte[] data) {
+        try {
+            writeBytes(data);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public byte[] tryReadBytes() {
+        try {
+            return readBytes();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    @Override
     public void writeString(String data) throws IOException {
         writeString(data, DEFAULT_ENCODING);
     }
