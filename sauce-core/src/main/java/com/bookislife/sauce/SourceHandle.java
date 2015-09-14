@@ -2,7 +2,7 @@ package com.bookislife.sauce;
 
 /**
  * The class represents a util that is used to handle the specified source.
- * <p/>
+ * <p></p>
  *
  * @author SidneyXu
  */

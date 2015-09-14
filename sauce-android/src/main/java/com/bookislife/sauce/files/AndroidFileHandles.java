@@ -66,7 +66,7 @@ public final class AndroidFileHandles implements FileHandles {
     }
 
     public FileHandle assets(String first, String... more) {
-        return assets(first, more);
+        return internal(first, more);
     }
 
     @Override

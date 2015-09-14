@@ -2,7 +2,7 @@ package com.bookislife.sauce.exception;
 
 /**
  * The class represents the exception occurs when using sauce Library.
- * <p/>
+ * <p></p>
  *
  * @author SidneyXu
  */

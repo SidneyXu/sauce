@@ -19,7 +19,7 @@ android:
     - sys-img-armeabi-v7a-android-22
 
 script:
-  - ./gradlew clean connectedAndroidTestDebug --info
+  - ./gradlew clean connectedDebugAndroidTest --info
 
 #after_success:
  # - ./gradlew jacocoTestReport coveralls
