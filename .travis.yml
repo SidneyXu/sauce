@@ -29,20 +29,21 @@ env:
     - ADB_INSTALL_TIMEOUT=8
 
 before_script:
-  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
+  - mksdcard -l mySdCard 1024M mySdCardFile.img
+  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a -sdcard mySdCardFile.img
   - emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
 
 script:
-#  - android list target
+  #- android list target
   - ./gradlew connectedDebugAndroidTest
 
 #after_success:
  # - ./gradlew jacocoTestReport coveralls
  # - ./scripts/publish_snapshot.sh
 
-#cache:
-#  directories:
-#    - $HOME/.gradle
-#    - $HOME/.m2/repository
+cache:
+  directories:
+    - $HOME/.gradle
+    - $HOME/.m2/repository
