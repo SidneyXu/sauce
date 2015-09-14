@@ -4,6 +4,8 @@ branches:
 
 language: android
 sudo: false
+jdk:
+  - oraclejdk7
 
 android:
   components:
@@ -33,14 +35,14 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
-  - android list target
-  - ./gradlew clean connectedDebugAndroidTest
+#  - android list target
+  - ./gradlew connectedDebugAndroidTest
 
 #after_success:
  # - ./gradlew jacocoTestReport coveralls
  # - ./scripts/publish_snapshot.sh
 
-cache:
-  directories:
-    - $HOME/.gradle
-    - $HOME/.m2/repository
+#cache:
+#  directories:
+#    - $HOME/.gradle
+#    - $HOME/.m2/repository
