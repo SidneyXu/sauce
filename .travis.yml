@@ -34,7 +34,7 @@ before_script:
 
 script:
   - android list target
-  - ./gradlew clean connectedDebugAndroidTest --info
+  - ./gradlew clean connectedDebugAndroidTest
 
 #after_success:
  # - ./gradlew jacocoTestReport coveralls
