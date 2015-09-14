@@ -18,6 +18,11 @@ android:
     # if you need to run emulator(s) during your tests
     - sys-img-armeabi-v7a-android-22
 
+env:
+  global:
+    # install timeout in minutes (2 minutes by default)
+    - ADB_INSTALL_TIMEOUT=8
+
 before script:
   - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
   - emulator -avd test -no-skin -no-audio -no-window &
@@ -25,6 +30,7 @@ before script:
   - adb shell input keyevent 82 &
 
 script:
+  - android list target
   - ./gradlew clean connectedDebugAndroidTest --info
 
 #after_success:
