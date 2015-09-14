@@ -7,8 +7,8 @@ sudo: false
 
 android:
   components:
-    - build-tools-21.1.1
-    - android-21
+    - build-tools-22.0.1
+    - android-22
     - doc-MNC
     - extra-android-support
     - extra-android-m2repository
@@ -16,7 +16,7 @@ android:
 
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
-    - sys-img-armeabi-v7a-android-21
+    - sys-img-armeabi-v7a-android-22
 
 script:
   - ./gradlew clean testDebug --info
