@@ -37,7 +37,7 @@ before_script:
 
 script:
   #- android list target
-  - ./gradlew connectedDebugAndroidTest
+  - ./gradlew connectedDebugAndroidTest --info
 
 after_success:
   - ./gradlew coveralls
