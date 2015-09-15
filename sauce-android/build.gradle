@@ -9,7 +9,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1x'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.4.0'
     }
 }
 
@@ -124,47 +124,47 @@ artifacts {
 
 
 apply from: '../mvn_publish.gradle'
-apply from: '../jacoco.gradle'
+//apply from: '../jacoco.gradle'
 //
-////// jacoco start
-//apply plugin: 'jacoco'
-//
-//jacoco {
-//    toolVersion "0.7.1.201405082137"
-//
-//    reportsDir = file("$buildDir/customJacocoReportDir")
-//}
-//
-//task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
-//    group = "Reporting"
-//    description = "Generate Jacoco coverage reports"
-//
-//    classDirectories = fileTree(
-//            dir: "${buildDir}/intermediates/classes/debug",
-//            excludes: ['**/R.class',
-//                       '**/R$*.class',
-//                       '**/BuildConfig.*']
-//    )
-//
-//    sourceDirectories = files("${buildDir.parent}/src/main/java")
-//    additionalSourceDirs = files([
-//            "${buildDir}/generated/source/buildConfig/debug",
-//            "${buildDir}/generated/source/r/debug"
-//    ])
-//    executionData = files("${buildDir}/jacoco/testDebugUnitTest.exec")
-//
-//    reports {
-//        xml.enabled = true
-//        html.enabled = true
-//        xml {
-//            destination "${buildDir}/reports/jacoco/${project.name}/jacocoTestReport.xml"
-//        }
-//        html {
-//            destination "${buildDir}/reports/jacoco/${project.name}"
-//        }
-//    }
-//}
-//// jacoco end
+//// jacoco start
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion "0.7.1.201405082137"
+
+    reportsDir = file("$buildDir/customJacocoReportDir")
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports"
+
+    classDirectories = fileTree(
+            dir: "${buildDir}/intermediates/classes/debug",
+            excludes: ['**/R.class',
+                       '**/R$*.class',
+                       '**/BuildConfig.*']
+    )
+
+    sourceDirectories = files("${buildDir.parent}/src/main/java")
+    additionalSourceDirs = files([
+            "${buildDir}/generated/source/buildConfig/debug",
+            "${buildDir}/generated/source/r/debug"
+    ])
+    executionData = files("${buildDir}/jacoco/testDebugUnitTest.exec")
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        xml {
+            destination "${buildDir}/reports/jacoco/${project.name}/jacocoTestReport.xml"
+        }
+        html {
+            destination "${buildDir}/reports/jacoco/${project.name}"
+        }
+    }
+}
+// jacoco end
 
 //region Coveralls
 
