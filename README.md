@@ -1,5 +1,5 @@
 [![MIT License][license-image]][license-url] [![Build Status][travis-image]][travis-url]
-[![Coverage Status](https://coveralls.io/repos/moment/moment/badge.svg?branch=master)](https://coveralls.io/r/moment/moment?branch=master)
+[![Coverage Status](https://coveralls.io/repos/SidneyXu/sauce/badge.svg?branch=master&service=github)](https://coveralls.io/github/SidneyXu/sauce?branch=master)
 
 # sauce
 
