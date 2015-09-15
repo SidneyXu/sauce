@@ -132,7 +132,7 @@ apply plugin: 'jacoco'
 jacoco {
     toolVersion "0.7.1.201405082137"
 
-    reportsDir = file("$buildDir/customJacocoReportDir")
+//    reportsDir = file("$buildDir/customJacocoReportDir")
 }
 
 task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
