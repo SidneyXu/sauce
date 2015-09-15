@@ -26,7 +26,7 @@ android:
 env:
   global:
     # install timeout in minutes (2 minutes by default)
-    - ADB_INSTALL_TIMEOUT=12
+    - ADB_INSTALL_TIMEOUT=14
 
 before_script:
   - mksdcard -l mySdCard 1024M mySdCardFile.img
@@ -43,7 +43,7 @@ after_success:
   - ./gradlew createDebugAndroidTestCoverageReport coveralls --info
  # - ./scripts/publish_snapshot.sh
 
-#cache:
-# directories:
-#    - $HOME/.gradle
-#    - $HOME/.m2/repository
+cache:
+  directories:
+    - $HOME/.gradle
+    - $HOME/.m2/repository
