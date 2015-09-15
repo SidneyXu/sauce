@@ -2,6 +2,17 @@ apply plugin: 'com.android.library'
 
 def localReleaseDest = "${buildDir}/release/${VERSION_NAME}"
 
+apply plugin: 'com.github.kt3k.coveralls'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1x'
+    }
+}
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -113,7 +124,7 @@ artifacts {
 
 
 apply from: '../mvn_publish.gradle'
-apply from: '../jacoco.gradle'
+//apply from: '../jacoco.gradle'
 //
 ////// jacoco start
 //apply plugin: 'jacoco'
@@ -157,6 +168,6 @@ apply from: '../jacoco.gradle'
 
 //region Coveralls
 
-//coveralls.jacocoReportPath = "${buildDir}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
+coveralls.jacocoReportPath = "${buildDir}/coverage/debug/report.xml"
 
 //endregion
