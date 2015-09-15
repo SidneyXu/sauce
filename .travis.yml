@@ -37,10 +37,10 @@ before_script:
 
 script:
   #- android list target
-  - ./gradlew connectedDebugAndroidTest --info
+  - ./gradlew connectedDebugAndroidTest
 
 after_success:
-  - ./gradlew coveralls
+  - ./gradlew coveralls --info
  # - ./scripts/publish_snapshot.sh
 
 cache:
