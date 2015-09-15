@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by mrseasons on 2015/09/08.
+ * The class represents a util to handle the file source on the Android platform.
+ *
+ * @author SidneyXu
  */
 public class AndroidFileHandle extends FileHandle {
 
@@ -21,13 +23,19 @@ public class AndroidFileHandle extends FileHandle {
 
     private static Context context = SauceAndroid.getInstance().context;
 
+    /**
+     * Construct the AndroidFileHandle instance.
+     *
+     * @param type     the specified type.@see AndroidFileHandles.FileType
+     * @param fileName the full file name
+     */
     AndroidFileHandle(AndroidFileHandles.FileType type, String fileName) {
         this.fileType = type;
         switch (type) {
             case SDCARD:
                 File sdcard = AndroidIOUtils.getSDCardDir();
                 if (null == sdcard)
-                    throw new RuntimeException("Cannot found any sd card available.");
+                    throw new RuntimeException("Unable to find any sd card available.");
                 file = new File(sdcard, fileName);
                 break;
             case FILES:
@@ -45,41 +53,81 @@ public class AndroidFileHandle extends FileHandle {
         }
     }
 
+    /**
+     * Construct the AndroidFileHandle instance with absolute file type.
+     *
+     * @param file the file to be wrapped
+     */
     AndroidFileHandle(File file) {
         this.fileType = AndroidFileHandles.FileType.ABSOLUTE;
         this.file = file;
     }
 
+    /**
+     * Make directories if possible.
+     *
+     * @return True is success. False otherwise.
+     */
     @Override
     public boolean mkdirs() {
         return file.mkdirs();
     }
 
+    /**
+     * Check whether the source is directory or not.
+     *
+     * @return True if is directory. False otherwise.
+     */
     @Override
     public boolean isDirectory() {
         return file.isDirectory();
     }
 
+    /**
+     * Check whether the source is file or not.
+     *
+     * @return True if is file. False otherwise.
+     */
     @Override
     public boolean isFile() {
         return file.isFile();
     }
 
+    /**
+     * Check whether the source exists.
+     *
+     * @return True if exists. False otherwise.
+     */
     @Override
     public boolean exists() {
         return file.exists();
     }
 
+    /**
+     * Check whether the source not exist.
+     *
+     * @return True if not exist. False otherwise.
+     */
     @Override
     public boolean notExist() {
         return !exists();
     }
 
+    /**
+     * Get the file represents the source.
+     *
+     * @return the file
+     */
     @Override
     public File toFile() {
         return file;
     }
 
+    /**
+     * List the files below the source.
+     *
+     * @return An array of files or null if nothing exists.
+     */
     @Override
     public File[] listFiles() {
         return file.listFiles();
@@ -98,6 +146,11 @@ public class AndroidFileHandle extends FileHandle {
         return null;
     }
 
+    /**
+     * Delete the source if source is a file.
+     *
+     * @return True if succeeded. False otherwise.
+     */
     @Override
     public boolean delete() {
         switch (fileType) {
@@ -108,6 +161,9 @@ public class AndroidFileHandle extends FileHandle {
         }
     }
 
+    /**
+     * Delete all children in the source if source is a directory.
+     */
     @Override
     public void deleteChildren() {
         switch (fileType) {
@@ -118,6 +174,9 @@ public class AndroidFileHandle extends FileHandle {
         }
     }
 
+    /**
+     * Delete the source and all its children. Available for both file and directory.
+     */
     @Override
     public void deleteDirectory() {
         switch (fileType) {
@@ -128,6 +187,12 @@ public class AndroidFileHandle extends FileHandle {
         }
     }
 
+    /**
+     * Get the inputStream of the source.
+     *
+     * @return the inputStream
+     * @throws IOException
+     */
     @Override
     public InputStream getInputStream() throws IOException {
         switch (fileType) {
@@ -140,6 +205,13 @@ public class AndroidFileHandle extends FileHandle {
         }
     }
 
+    /**
+     * Get the outputStream of the source.
+     *
+     * @param append True if want to append the previous content. False otherwise.
+     * @return the outputStream
+     * @throws IOException
+     */
     @Override
     public OutputStream getOutputStream(boolean append) throws IOException {
         switch (fileType) {
@@ -150,6 +222,12 @@ public class AndroidFileHandle extends FileHandle {
         }
     }
 
+    /**
+     * Write some bytes to the source.
+     *
+     * @param data the bytes for writing
+     * @throws IOException
+     */
     @Override
     public void writeBytes(byte[] data) throws IOException {
         OutputStream out = null;
@@ -164,6 +242,12 @@ public class AndroidFileHandle extends FileHandle {
         }
     }
 
+    /**
+     * Read bytes from the source.
+     *
+     * @return the read bytes or null if source is empty
+     * @throws IOException
+     */
     @Override
     public byte[] readBytes() throws IOException {
         InputStream in = null;
@@ -183,6 +267,12 @@ public class AndroidFileHandle extends FileHandle {
         }
     }
 
+    /**
+     * Try to write some bytes to the source.
+     *
+     * @param data the bytes for writing
+     * @return True if succeed. False otherwise.
+     */
     @Override
     public boolean tryWriteBytes(final byte[] data) {
         try {
@@ -193,6 +283,11 @@ public class AndroidFileHandle extends FileHandle {
         }
     }
 
+    /**
+     * Try to read bytes from the source.
+     *
+     * @return the read bytes or null if source is empty or any error occurs.
+     */
     @Override
     public byte[] tryReadBytes() {
         try {
@@ -202,22 +297,48 @@ public class AndroidFileHandle extends FileHandle {
         }
     }
 
+    /**
+     * Write a string data to the source.
+     *
+     * @param data the string for writing
+     * @throws IOException
+     */
     @Override
     public void writeString(String data) throws IOException {
         writeString(data, DEFAULT_ENCODING);
     }
 
+    /**
+     * Write a string data by the specified encoding to the source.
+     *
+     * @param data     the string for writing
+     * @param encoding the encoding of the string
+     * @throws IOException
+     */
     @Override
     public void writeString(String data, String encoding) throws IOException {
         byte[] bytes = data.getBytes(encoding);
         writeBytes(bytes);
     }
 
+    /**
+     * Try to write a string data to the source.
+     *
+     * @param data the string for writing
+     * @return True if succeed. False otherwise.
+     */
     @Override
     public boolean tryWriteString(String data) {
         return tryWriteString(data, DEFAULT_ENCODING);
     }
 
+    /**
+     * Try to write a string data to the source.
+     *
+     * @param data     the string for writing
+     * @param encoding the encoding of the string
+     * @return True if succeed. False otherwise.
+     */
     @Override
     public boolean tryWriteString(String data, String encoding) {
         try {
@@ -228,11 +349,24 @@ public class AndroidFileHandle extends FileHandle {
         }
     }
 
+    /**
+     * Read string from the source.
+     *
+     * @return the read string or null if source is empty
+     * @throws IOException
+     */
     @Override
     public String readString() throws IOException {
         return readString(DEFAULT_ENCODING);
     }
 
+    /**
+     * Read string with the specified encoding from the source.
+     *
+     * @param encoding the encoding for parsing the string
+     * @return the read string or null if source is empty
+     * @throws IOException
+     */
     @Override
     public String readString(String encoding) throws IOException {
         byte[] data = readBytes();
@@ -243,11 +377,22 @@ public class AndroidFileHandle extends FileHandle {
         return null;
     }
 
+    /**
+     * Try to read string from the source.
+     *
+     * @return the read string or null if source is empty or any error occurs.
+     */
     @Override
     public String tryReadString() {
         return tryReadString(DEFAULT_ENCODING);
     }
 
+    /**
+     * Try to read string from the source with the specified encoding.
+     *
+     * @param encoding the encoding for parsing the string
+     * @return the read string or null if source is empty or any error occurs.
+     */
     @Override
     public String tryReadString(String encoding) {
         try {

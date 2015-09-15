@@ -5,7 +5,9 @@ import com.bookislife.sauce.files.AndroidFileHandles;
 import com.bookislife.sauce.files.FileHandles;
 
 /**
- * Created by mrseasons on 2015/09/08.
+ * The class represents Android platform of the sauce Library.
+ *
+ * @author SidneyXu
  */
 public class SauceAndroid extends SaucePlatform {
 
@@ -20,11 +22,21 @@ public class SauceAndroid extends SaucePlatform {
         return current;
     }
 
+    /**
+     * Construct the Android platform.
+     *
+     * @param context the Android Context
+     */
     public SauceAndroid(Context context) {
         this.context = context.getApplicationContext();
         current = this;
     }
 
+    /**
+     * Get the FileHandles of Android platform.
+     *
+     * @return the FileHandles instance of Android platform
+     */
     @Override
     protected FileHandles getFiles() {
         return new AndroidFileHandles();

@@ -9,10 +9,17 @@ import com.bookislife.sauce.SauceAndroid;
 import java.io.File;
 
 /**
- * Created by mrseasons on 2015/09/08.
+ * The class is used to make easier to handle some io operations.
+ *
+ * @author SidneyXu
  */
 public class AndroidIOUtils extends IOUtils {
 
+    /**
+     * Return the sdcard directory if mounted and has permission.
+     *
+     * @return the sdcard directory or null
+     */
     public static File getSDCardDir() {
         String state = Environment.getExternalStorageState();
         if (state.equals(Environment.MEDIA_MOUNTED)) {
@@ -21,6 +28,12 @@ public class AndroidIOUtils extends IOUtils {
         return null;
     }
 
+    /**
+     * Check whether the sdcard is mounted and has permission.
+     *
+     * @return True if sdcard is mounted ans has permission.
+     * False otherwise.
+     */
     public static boolean isSDCardEnabled() {
         return hasPermission(SauceAndroid.getInstance().context,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) && null != getSDCardDir();

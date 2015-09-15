@@ -14,10 +14,10 @@ public abstract class SaucePlatform {
      */
     public final FileHandles files;
 
-    public static final String VERSION = "0.0.1";
+    public static final String VERSION = "0.0.1-SNAPSHOT";
 
     /**
-     * Constructor the sauce platform.
+     * Construct the sauce platform.
      */
     public SaucePlatform() {
         files = getFiles();
