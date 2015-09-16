@@ -44,7 +44,6 @@ android {
 }
 
 dependencies {
-    compile "com.android.support:appcompat-v7:${rootProject.ext.appcompatVersion}"
     androidTestCompile 'com.squareup.assertj:assertj-android:1.1.0'
     compile project(':sauce-core')
 }
@@ -121,7 +120,6 @@ artifacts {
     archives androidSourcesJar
     archives androidJavadocsJar
 }
-
 
 //task connectedDebugAndroidTest{
 //configurations {
