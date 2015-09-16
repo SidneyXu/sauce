@@ -20,7 +20,7 @@ android:
     - $BUILD_TOOLS
     - $ANDROID_TARGET
     # - doc-MNC
-    #- extra-android-support
+    - extra-android-support
     #- extra-android-m2repository
     #- extra-google-google_play_services
 
