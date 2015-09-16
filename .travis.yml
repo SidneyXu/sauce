@@ -28,8 +28,8 @@ android:
     # if you need to run emulator(s) during your tests
     - sys-img-armeabi-v7a-$ANDROID_TARGET
 
-  licenses:
-    - 'android-sdk-license-.+'
+  #licenses:
+   # - 'android-sdk-license-.+'
 
 before_script:
   - mksdcard -l mySdCard 1024M mySdCardFile.img
@@ -40,7 +40,7 @@ before_script:
 
 script:
   #- android list target
-  - ./gradlew connectedDebugAndroidTest --continue
+  - ./gradlew connectedDebugAndroidTest --continue --info
 
 after_success:
   - ./gradlew createDebugAndroidTestCoverageReport coveralls
