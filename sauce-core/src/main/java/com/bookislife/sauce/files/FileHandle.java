@@ -75,6 +75,13 @@ public abstract class FileHandle extends SourceHandle {
     public abstract File[] listFiles();
 
     /**
+     * List the handles below the source.
+     *
+     * @return An array of handles or null if nothing exists.
+     */
+    public abstract FileHandle[] listHandles();
+
+    /**
      * Delete the source if source is a file.
      *
      * @return True if succeeded. False otherwise.

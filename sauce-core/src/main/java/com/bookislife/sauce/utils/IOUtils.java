@@ -116,4 +116,26 @@ public class IOUtils {
             }
         }
     }
+
+    /**
+     * Constructor the path with the parameters.
+     *
+     * @param first the first file path
+     * @param more  the more file path
+     * @return the actual path
+     */
+    public static String constructorPath(String first, String... more) {
+        StringBuilder builder = new StringBuilder(first);
+        if (!first.endsWith("/")) {
+            builder.append("/");
+        }
+        int len = more.length;
+        for (int i = 0; i < len; i++) {
+            builder.append(more[i]);
+            if (i != len - 1) {
+                builder.append("/");
+            }
+        }
+        return builder.toString();
+    }
 }

@@ -1,5 +1,7 @@
 package com.bookislife.sauce.files;
 
+import com.bookislife.sauce.utils.IOUtils;
+
 import java.io.File;
 
 /**
@@ -82,18 +84,7 @@ public final class AndroidFileHandles implements FileHandles {
      */
     @Override
     public FileHandle absolute(String first, String... more) {
-        StringBuilder builder = new StringBuilder(first);
-        if (!first.endsWith("/")) {
-            builder.append("/");
-        }
-        int len = more.length;
-        for (int i = 0; i < len; i++) {
-            builder.append(more[i]);
-            if (i != len - 1) {
-                builder.append("/");
-            }
-        }
-        return absolute(builder.toString());
+        return absolute(IOUtils.constructorPath(first, more));
     }
 
     /**
@@ -118,6 +109,17 @@ public final class AndroidFileHandles implements FileHandles {
     @Override
     public FileHandle external(String path) {
         return new AndroidFileHandle(FileType.SDCARD, path);
+    }
+
+    /**
+     * Construct the FileHandle with the specified path (first + more).
+     * <p></p>File locates in "sdcard/first/more...".
+     * @param first the first file path
+     * @param more  the more file path
+     * @return a FileHandle instance
+     */
+    public FileHandle external(String first, String... more) {
+        return external(IOUtils.constructorPath(first, more));
     }
 
     /**
@@ -164,17 +166,54 @@ public final class AndroidFileHandles implements FileHandles {
      */
     @Override
     public FileHandle internal(String first, String... more) {
-        StringBuilder builder = new StringBuilder(first);
-        if (!first.endsWith("/")) {
-            builder.append("/");
-        }
-        int len = more.length;
-        for (int i = 0; i < len; i++) {
-            builder.append(more[i]);
-            if (i != len - 1) {
-                builder.append("/");
-            }
-        }
-        return internal(builder.toString());
+        return internal(IOUtils.constructorPath(first, more));
+    }
+
+    /**
+     * Construct the FileHandle with the specified path.
+     * <p></p>File locates in "/data/data/yourPackageName/files/path".
+     *
+     * @param path the file path
+     * @return a FileHandle instance
+     */
+    public FileHandle files(String path) {
+        return new AndroidFileHandle(FileType.FILES, path);
+    }
+
+
+    /**
+     * Construct the FileHandle with the specified path (first + more).
+     * <p></p>File locates in "/data/data/yourPackageName/files/first/more...".
+     *
+     * @param first the first file path
+     * @param more  the more file path
+     * @return a FileHandle instance
+     */
+    public FileHandle files(String first, String... more) {
+        return files(IOUtils.constructorPath(first, more));
+    }
+
+    /**
+     * Construct the FileHandle with the specified path.
+     * <p></p>File locates in "/data/data/yourPackageName/caches/path".
+     *
+     * @param path the file path
+     * @return a FileHandle instance
+     */
+    public FileHandle caches(String path) {
+        return new AndroidFileHandle(FileType.CACHE, path);
+    }
+
+
+    /**
+     * Construct the FileHandle with the specified path (first + more).
+     * <p></p>File locates in "/data/data/yourPackageName/caches/first/more...".
+     *
+     * @param first the first file path
+     * @param more  the more file path
+     * @return a FileHandle instance
+     */
+    public FileHandle caches(String first, String... more) {
+        return caches(IOUtils.constructorPath(first, more));
     }
 }

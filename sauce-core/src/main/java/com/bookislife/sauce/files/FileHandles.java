@@ -18,7 +18,9 @@ public interface FileHandles {
 
     FileHandle internal(String path);
 
+    FileHandle internal(String first, String... more);
+
     FileHandle external(String path);
 
-    FileHandle internal(String first, String... more);
+    FileHandle external(String first, String... more);
 }

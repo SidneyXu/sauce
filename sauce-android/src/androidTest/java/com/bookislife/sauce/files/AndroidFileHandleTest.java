@@ -153,19 +153,128 @@ public class AndroidFileHandleTest extends BaseTestCase {
     }
 
     public void testListHandles() throws Exception {
+        /*
+            root/
+                dir1/
+                    dir1_1/
+                        text1_1.txt
+                    text1.txt
+                dir2/
+                    text2.txt
+         */
+        String path1 = testDirectory + "/" + "dir1";
+        String path1_1 = testDirectory + "/" + "dir1_1";
+        String path2 = testDirectory + "/" + "dir2";
+        String file1 = "text1.txt";
+        String file1_1 = "text1_1.txt";
+        String file2 = "text2.txt";
 
+        rootHandle.deleteChildren();
+
+        FileHandle handle1 = files.sdcard(path1);
+        FileHandle handle1_1 = files.absolute(handle1, path1_1);
+        FileHandle handle2 = files.sdcard(path2);
+        handle1_1.mkdirs();
+        handle2.mkdirs();
+
+        FileHandle fileHandle1 = files.absolute(handle1, file1);
+        FileHandle fileHandle1_1 = files.absolute(handle1_1, file1_1);
+        FileHandle fileHandle2 = files.absolute(handle2, file2);
+        fileHandle1.createNewFile();
+        fileHandle1_1.createNewFile();
+        fileHandle2.createNewFile();
+
+        assertThat(rootHandle.listHandles()).hasSize(2)
+                .extracting(new Extractor<FileHandle, String>() {
+                    @Override
+                    public String extract(final FileHandle handle) {
+                        return handle.toFile().getName();
+                    }
+                }).containsExactly("dir1", "dir2");
+        assertThat(handle1.listHandles()).hasSize(2);
+        assertThat(handle1_1.listHandles()).hasSize(1);
+        assertThat(handle2.listHandles()).hasSize(1);
+
+        handle1.deleteChildren();
+        assertThat(rootHandle.listHandles()).hasSize(2)
+                .extracting(new Extractor<FileHandle, String>() {
+                    @Override
+                    public String extract(final FileHandle handle) {
+                        return handle.toFile().getName();
+                    }
+                }).containsExactly("dir1", "dir2");
+
+        handle2.delete();
+        assertThat(rootHandle.listHandles()).hasSize(2)
+                .extracting(new Extractor<FileHandle, String>() {
+                    @Override
+                    public String extract(final FileHandle handle) {
+                        return handle.toFile().getName();
+                    }
+                }).containsExactly("dir1", "dir2");
+
+        handle2.deleteDirectory();
+        assertThat(rootHandle.listHandles()).hasSize(1)
+                .extracting(new Extractor<FileHandle, String>() {
+                    @Override
+                    public String extract(final FileHandle handle) {
+                        return handle.toFile().getName();
+                    }
+                }).containsExactly("dir1");
+
+        rootHandle.deleteChildren();
+
+        assertThat(rootHandle.listHandles()).hasSize(0);
     }
 
-    public void testDelete() throws Exception {
+    public void atestDeleteReadOnlyLocation() throws Exception {
+        String path = testDirectory + "/" + "foo.txt";
+        FileHandle handle = files.assets(path);
+        try {
+            handle.delete();
+            fail("Assets directory is read only.");
+        } catch (RuntimeException e) {
+            assertThat(e).isNotNull().hasMessageContaining("read only");
+        }
 
+        try {
+            handle.deleteChildren();
+            fail("Assets directory is read only.");
+        } catch (RuntimeException e) {
+            assertThat(e).isNotNull().hasMessageContaining("read only");
+        }
+
+        try {
+            handle.deleteDirectory();
+            fail("Assets directory is read only.");
+        } catch (RuntimeException e) {
+            assertThat(e).isNotNull().hasMessageContaining("read only");
+        }
     }
 
-    public void testDeleteChildren() throws Exception {
+    public void atestWriteReadOnlyLocation() throws Exception {
+        String path = testDirectory + "/" + "foo.txt";
+        FileHandle handle = files.assets(path);
+        try {
+            handle.writeString("foo");
+            fail("Assets directory is read only.");
+        } catch (RuntimeException e) {
+            assertThat(e).isNotNull().hasMessageContaining("read only");
+        }
 
-    }
+        try {
+            handle.writeBytes("foo".getBytes());
+            fail("Assets directory is read only.");
+        } catch (RuntimeException e) {
+            assertThat(e).isNotNull().hasMessageContaining("read only");
+        }
 
-    public void testDeleteDirectory() throws Exception {
-
+        try {
+            handle.writeLines(Arrays.asList("foo"));
+            fail("Assets directory is read only.");
+        } catch (RuntimeException e) {
+            assertThat(e).isNotNull().hasMessageContaining("read only");
+        }
     }
 
     public void testWriteAndReadBytes() throws Exception {
@@ -322,5 +431,13 @@ public class AndroidFileHandleTest extends BaseTestCase {
 
     public void testCopyDirectoryTo() throws Exception {
 
+    }
+
+    public void atestCreateNewFileTwice() throws Exception {
+        files.sdcard(testDirectory).deleteChildren();
+        String path = testDirectory + "/" + "foo.txt";
+        FileHandle handle = files.sdcard(path);
+        assertThat(handle.createNewFile()).isTrue();
+        assertThat(handle.createNewFile()).isFalse();
     }
 }

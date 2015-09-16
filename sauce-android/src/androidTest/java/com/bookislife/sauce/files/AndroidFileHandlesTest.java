@@ -1,7 +1,9 @@
 package com.bookislife.sauce.files;
 
+import android.content.Context;
 import com.bookislife.sauce.BaseTestCase;
 import com.bookislife.sauce.Sauce;
+import com.bookislife.sauce.SauceAndroid;
 
 import java.io.File;
 
@@ -51,11 +53,21 @@ public class AndroidFileHandlesTest extends BaseTestCase {
     }
 
     public void testExternal() throws Exception {
+        FileHandle handle = files.external(testDirectory);
+        assertThat(handle).isNotNull();
+        assertThat(handle.toFile().getName()).isEqualTo(testDirectory);
 
+        FileHandle handle2 = files.external(testDirectory, "foo");
+        assertThat(handle2).isNotNull();
     }
 
     public void testSdcard() throws Exception {
+        FileHandle handle = files.sdcard(testDirectory);
+        assertThat(handle).isNotNull();
+        assertThat(handle.toFile().getName()).isEqualTo(testDirectory);
 
+        FileHandle handle2 = files.external(testDirectory);
+        assertThat(handle.toFile().getAbsolutePath()).isEqualTo(handle2.toFile().getAbsolutePath());
     }
 
     public void testAssets() throws Exception {
@@ -65,6 +77,24 @@ public class AndroidFileHandlesTest extends BaseTestCase {
 
         FileHandle handle2 = files.assets(testDirectory, "foo");
         assertThat(handle2).isNotNull();
+    }
+
+    public void testFiles() throws Exception {
+        FileHandle handle = files.files(testDirectory);
+        Context context = SauceAndroid.getInstance().context;
+        assertThat(handle).isNotNull();
+        assertThat(handle.toFile().getAbsolutePath())
+                .isEqualTo(context.getFilesDir().getPath()
+                        + "/" + testDirectory);
+    }
+
+    public void testCaches() throws Exception {
+        FileHandle handle = files.caches(testDirectory);
+        Context context = SauceAndroid.getInstance().context;
+        assertThat(handle).isNotNull();
+        assertThat(handle.toFile().getAbsolutePath())
+                .isEqualTo(context.getCacheDir().getPath()
+                        + "/" + testDirectory);
     }
 
 }

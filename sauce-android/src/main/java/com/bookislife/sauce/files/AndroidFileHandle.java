@@ -133,6 +133,12 @@ public class AndroidFileHandle extends FileHandle {
         return file.listFiles();
     }
 
+    /**
+     * List the handles below the source.
+     *
+     * @return An array of handles or null if nothing exists.
+     */
+    @Override
     public FileHandle[] listHandles() {
         File[] files = listFiles();
         if (files != null) {
