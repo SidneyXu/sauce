@@ -38,8 +38,8 @@ public class PrefsTest extends BaseTestCase {
         putMap(context, prefsName, map);
         assertThat(getString(context, prefsName, "name", null))
                 .isEqualTo("Peter");
-        assertThat(getInt(context, prefsName, "age", 0))
-                .isEqualTo(10);
+        assertThat(getString(context, prefsName, "age", null))
+                .isEqualTo("10");
     }
 
     public void testString() throws Exception {
