@@ -40,7 +40,10 @@ script:
   - ./gradlew connectedDebugAndroidTest
 
 after_success:
-  - ./gradlew createDebugAndroidTestCoverageReport coveralls --info
+  - echo "===report start==="
+  - cat "/home/travis/build/SidneyXu/sauce/sauce-android/build/reports/coverage/debug/report.xml"
+  - echo "===report end"
+  - ./gradlew createDebugAndroidTestCoverageReport coveralls
  # - ./scripts/publish_snapshot.sh
 
 cache:
