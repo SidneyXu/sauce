@@ -21,8 +21,8 @@ android:
     - $ANDROID_TARGET
     # - doc-MNC
     - extra-android-support
-    #- extra-android-m2repository
-    #- extra-google-google_play_services
+    - extra-android-m2repository
+    - extra-google-google_play_services
 
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
