@@ -41,6 +41,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+    packagingOptions {
+        exclude 'NOTICE'
+        exclude 'asm-license.txt'
+        exclude 'mockito-extensions/org.mockito.plugins.MockMaker'
+    }
+
 }
 
 dependencies {

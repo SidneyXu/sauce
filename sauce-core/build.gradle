@@ -40,3 +40,66 @@ artifacts {
 }
 
 apply from: '../mvn_publish.gradle'
+
+// jacoco start
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion "0.7.1.201405082137"
+
+//    reportsDir = file("$buildDir/customJacocoReportDir")
+}
+
+//test {
+//
+//    jacoco {
+////        group = "Reporting"
+////        description = "Generate Jacoco coverage reports"
+////
+////        sourceDirectories = files("${buildDir.parent}/src/main/java")
+////        additionalSourceDirs = files([
+////                "${buildDir}/generated/source/buildConfig/debug",
+////                "${buildDir}/generated/source/r/debug"
+////        ])
+////        executionData = files("${buildDir}/jacoco/test.exec")
+////
+//        reports {
+//            xml.enabled = true
+//            html.enabled = true
+//            xml {
+//                destination "${buildDir}/reports/jacoco/${project.name}/jacocoTestReport.xml"
+//            }
+//            html {
+//                destination "${buildDir}/reports/jacoco/${project.name}"
+//            }
+//        }
+//    }
+//}
+// jacoco end
+
+jacocoTestReport {
+    classDirectories = fileTree(
+            dir: "${buildDir}/classes/main",
+            exclude: [
+                    '**/R*.class',
+                    '**/BuildConfig*',
+                    '**/*$*.class',
+                    '**/*$*.java']
+    )
+    additionalSourceDirs = files([
+            "src/main/java"
+    ])
+
+    executionData = files("${buildDir}/jacoco/test.exec")
+
+    reports {
+        xml.enabled = true
+        csv.enabled = true
+        xml {
+            destination "${buildDir}/reports/jacoco/${project.name}/jacocoTestReport.xml"
+        }
+        html {
+            destination "${buildDir}/reports/jacoco/${project.name}"
+        }
+    }
+}

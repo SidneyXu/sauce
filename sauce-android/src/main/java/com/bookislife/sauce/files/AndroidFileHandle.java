@@ -408,10 +408,22 @@ public class AndroidFileHandle extends FileHandle {
         }
     }
 
+    /**
+     * Write a json to the source.
+     *
+     * @param jsonObject the json for writing
+     * @throws IOException
+     */
     public void writeJSONObject(JSONObject jsonObject) throws IOException {
         writeString(jsonObject.toString());
     }
 
+    /**
+     * Try to write a json to the source.
+     *
+     * @param jsonObject the json for writing
+     * @return True if succeed. False otherwise.
+     */
     public boolean tryWriteJSONObject(JSONObject jsonObject) {
         try {
             writeJSONObject(jsonObject);
@@ -421,6 +433,12 @@ public class AndroidFileHandle extends FileHandle {
         return true;
     }
 
+    /**
+     * Read json from the source.
+     *
+     * @return the read json or null if source is empty
+     * @throws IOException
+     */
     public JSONObject readJSONObject() throws IOException, JSONException {
         String content = readString();
         if (null != content) {
@@ -429,6 +447,11 @@ public class AndroidFileHandle extends FileHandle {
         return null;
     }
 
+    /**
+     * Try to read json from the source.
+     *
+     * @return the read json or null if source is empty or any error occurs.
+     */
     public JSONObject tryReadJSONObject() {
         try {
             return readJSONObject();
@@ -606,4 +629,5 @@ public class AndroidFileHandle extends FileHandle {
         }
         return false;
     }
+
 }

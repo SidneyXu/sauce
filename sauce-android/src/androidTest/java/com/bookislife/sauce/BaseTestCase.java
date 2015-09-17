@@ -1,24 +1,22 @@
 package com.bookislife.sauce;
 
+import android.content.Context;
 import android.test.InstrumentationTestCase;
 
 /**
- * Created by mrseasons on 2015/09/08.
+ * Created by SidneyXu on 2015/09/08.
  */
 public abstract class BaseTestCase extends InstrumentationTestCase {
+
+    protected Context context;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        Sauce.initialize(new SauceAndroid(getInstrumentation().getContext()));
+
+        this.context = getInstrumentation().getContext();
+        Sauce.initialize(new SauceAndroid(context));
+
     }
 
-    //    public void test01() throws IOException {
-    //        String expected = "hello world";
-    //        FileHandle handle = files.sdcard("foo.txt");
-    //        handle.writeString(expected);
-    //
-    //        String actual = handle.readString();
-    //        assertThat(actual).isEqualTo(expected);
-    //    }
 }

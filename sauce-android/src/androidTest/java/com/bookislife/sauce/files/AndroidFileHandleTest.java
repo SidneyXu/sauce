@@ -12,7 +12,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Created by mrseasons on 2015/09/10.
+ * Created by SidneyXu on 2015/09/10.
  */
 public class AndroidFileHandleTest extends BaseTestCase {
 
@@ -27,6 +27,13 @@ public class AndroidFileHandleTest extends BaseTestCase {
         files = (AndroidFileHandles) Sauce.files;
         rootHandle = files.sdcard(testDirectory);
         rootHandle.mkdirs();
+        rootHandle.deleteChildren();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        rootHandle.delete();
     }
 
     public void testMkdirs() throws Exception {
@@ -227,7 +234,14 @@ public class AndroidFileHandleTest extends BaseTestCase {
         assertThat(rootHandle.listHandles()).hasSize(0);
     }
 
-    public void atestDeleteReadOnlyLocation() throws Exception {
+    public void testListEmpty() throws Exception {
+        String path = testDirectory + "/" + "empty";
+        FileHandle handle = files.sdcard(path);
+        assertThat(handle.listFiles()).isNull();
+        assertThat(handle.listHandles()).isNull();
+    }
+
+    public void testDeleteReadOnlyLocation() throws Exception {
         String path = testDirectory + "/" + "foo.txt";
         FileHandle handle = files.assets(path);
         try {
@@ -252,7 +266,7 @@ public class AndroidFileHandleTest extends BaseTestCase {
         }
     }
 
-    public void atestWriteReadOnlyLocation() throws Exception {
+    public void testWriteReadOnlyLocation() throws Exception {
         String path = testDirectory + "/" + "foo.txt";
         FileHandle handle = files.assets(path);
         try {
@@ -287,6 +301,26 @@ public class AndroidFileHandleTest extends BaseTestCase {
         assertThat(readHandle.readBytes()).isEqualTo(expected);
     }
 
+    public void testTryWriteAndReadBytes() throws Exception {
+        String folderNotCreatedPath = testDirectory + "/notExist/foo.data";
+        String path = testDirectory + "/foo.data";
+
+        FileHandle writeHandle = files.sdcard(folderNotCreatedPath);
+        assertThat(writeHandle.tryWriteBytes("hello world".getBytes()))
+                .isFalse();
+
+        FileHandle writeHandle2 = files.sdcard(path);
+        assertThat(writeHandle2.tryWriteBytes("hello world".getBytes()))
+                .isTrue();
+
+        FileHandle readHandle = files.sdcard(folderNotCreatedPath);
+        assertThat(readHandle.tryReadBytes()).isNull();
+
+
+        FileHandle readHandle2 = files.sdcard(path);
+        assertThat(readHandle2.tryReadBytes()).isNotNull();
+    }
+
     public void testWriteAndReadString() throws Exception {
         String path = testDirectory + "/" + "foo.txt";
 
@@ -311,21 +345,24 @@ public class AndroidFileHandleTest extends BaseTestCase {
         assertThat(readHandle.readString("shift-jis")).isEqualTo(expected);
     }
 
-    public void testTryWriteString() throws Exception {
+    public void testTryWriteAndReadString() throws Exception {
+        String folderNotCreatedPath = testDirectory + "/notExist/foo.txt";
+        String path = testDirectory + "/foo.txt";
 
-    }
+        FileHandle writeHandle = files.sdcard(folderNotCreatedPath);
+        assertThat(writeHandle.tryWriteString("hello world"))
+                .isFalse();
 
-    public void testTryWriteString1() throws Exception {
+        FileHandle writeHandle2 = files.sdcard(path);
+        assertThat(writeHandle2.tryWriteString("hello world"))
+                .isTrue();
 
-    }
+        FileHandle readHandle = files.sdcard(folderNotCreatedPath);
+        assertThat(readHandle.tryReadString()).isNull();
 
 
-    public void testTryReadString() throws Exception {
-
-    }
-
-    public void testTryReadString1() throws Exception {
-
+        FileHandle readHandle2 = files.sdcard(path);
+        assertThat(readHandle2.tryReadString()).isNotNull();
     }
 
     public void testWriteAndReadJSONObject() throws Exception {
@@ -343,12 +380,26 @@ public class AndroidFileHandleTest extends BaseTestCase {
         assertThat(actual.getInt("x")).isEqualTo(1);
     }
 
-    public void testTryWriteJSONObject() throws Exception {
+    public void testTryWriteAndReadJSONObject() throws Exception {
+        String folderNotCreatedPath = testDirectory + "/notExist/foo.json";
+        String path = testDirectory + "/foo.json";
 
-    }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("foo", "bar");
+        AndroidFileHandle writeHandle = (AndroidFileHandle) files.sdcard(folderNotCreatedPath);
+        assertThat(writeHandle.tryWriteJSONObject(jsonObject))
+                .isFalse();
 
-    public void testTryReadJSONObject() throws Exception {
+        AndroidFileHandle writeHandle2 = (AndroidFileHandle) files.sdcard(path);
+        assertThat(writeHandle2.tryWriteJSONObject(jsonObject))
+                .isTrue();
 
+        AndroidFileHandle readHandle = (AndroidFileHandle) files.sdcard(folderNotCreatedPath);
+        assertThat(readHandle.tryReadJSONObject()).isNull();
+
+
+        AndroidFileHandle readHandle2 = (AndroidFileHandle) files.sdcard(path);
+        assertThat(readHandle2.tryReadJSONObject()).isNotNull();
     }
 
     public void testWriteCSV() throws Exception {
@@ -385,20 +436,6 @@ public class AndroidFileHandleTest extends BaseTestCase {
         assertThat(actual).hasSize(lines.size()).isEqualTo(lines);
     }
 
-    public void atestTransferTo() throws Exception {
-        String path = testDirectory + "/" + "source.txt";
-
-        String expected = "hello world";
-        FileHandle sourceHandle = files.sdcard(path);
-        sourceHandle.writeString(expected);
-
-        FileHandle targetHandle = files.absolute(testDirectory + "/" + "target.txt");
-        targetHandle.createNewFile();
-        sourceHandle.transferTo(targetHandle.getOutputStream(false));
-
-        assertThat(targetHandle.readString()).isEqualTo(expected);
-    }
-
     public void atestTransferFrom() throws Exception {
         String path = testDirectory + "/" + "source.txt";
 
@@ -414,11 +451,47 @@ public class AndroidFileHandleTest extends BaseTestCase {
     }
 
     public void testRenameTo() throws Exception {
+        String sourcePath = testDirectory + "/" + "source.txt";
+        String targetPath = testDirectory + "/" + "target.txt";
 
+        String expected = "this is a test sentence";
+        FileHandle sourceHandle = files.sdcard(sourcePath);
+        sourceHandle.writeString(expected);
+
+        FileHandle targetHandle = files.sdcard(targetPath);
+        sourceHandle.renameTo(targetHandle);
+
+        assertThat(targetHandle.exists()).isTrue();
+        assertThat(targetHandle.isFile()).isTrue();
+        assertThat(targetHandle.readString()).isEqualTo(expected);
+
+        sourceHandle = files.sdcard(sourcePath);
+        assertThat(sourceHandle.exists()).isFalse();
+        assertThat(sourceHandle.isFile()).isFalse();
+        assertThat(sourceHandle.tryReadString()).isNull();
     }
 
     public void testMoveTo() throws Exception {
+        String sourcePath = testDirectory + "/" + "source.txt";
+        String targetPath = testDirectory + "/" + "target.txt";
 
+        String expected = "this is a test sentence";
+        FileHandle sourceHandle = files.sdcard(sourcePath);
+        sourceHandle.writeString(expected);
+
+        FileHandle targetHandle = files.sdcard(targetPath);
+        assertThat(targetHandle.notExist()).isTrue();
+        assertThat(targetHandle.tryReadString()).isNull();
+        sourceHandle.moveTo(targetHandle);
+
+        assertThat(targetHandle.exists()).isTrue();
+        assertThat(targetHandle.isFile()).isTrue();
+        assertThat(targetHandle.readString()).isEqualTo(expected);
+
+        sourceHandle = files.sdcard(sourcePath);
+        assertThat(sourceHandle.exists()).isFalse();
+        assertThat(sourceHandle.isFile()).isFalse();
+        assertThat(sourceHandle.tryReadString()).isNull();
     }
 
     public void testMoveDirectoryTo() throws Exception {
@@ -426,14 +499,48 @@ public class AndroidFileHandleTest extends BaseTestCase {
     }
 
     public void testCopyTo() throws Exception {
+        String sourcePath = testDirectory + "/" + "source.txt";
+        String targetPath = testDirectory + "/" + "target.txt";
 
+        String expected = "this is a test sentence";
+        FileHandle sourceHandle = files.sdcard(sourcePath);
+        sourceHandle.writeString(expected);
+
+        FileHandle targetHandle = files.sdcard(targetPath);
+        assertThat(targetHandle.notExist()).isTrue();
+        assertThat(targetHandle.tryReadString()).isNull();
+        sourceHandle.copyTo(targetHandle);
+
+        assertThat(targetHandle.exists()).isTrue();
+        assertThat(targetHandle.isFile()).isTrue();
+        assertThat(targetHandle.readString()).isEqualTo(expected);
+
+        sourceHandle = files.sdcard(sourcePath);
+        assertThat(sourceHandle.exists()).isTrue();
+        assertThat(sourceHandle.isFile()).isTrue();
+        assertThat(sourceHandle.readString()).isEqualTo(expected);
     }
 
     public void testCopyDirectoryTo() throws Exception {
 
     }
 
-    public void atestCreateNewFileTwice() throws Exception {
+    public void vtestTransferTo() throws Exception {
+        String sourcePath = testDirectory + "/" + "source.txt";
+        String targetPath = testDirectory + "/" + "target.txt";
+
+        String expected = "this is a test sentence";
+        FileHandle sourceHandle = files.sdcard(sourcePath);
+        sourceHandle.writeString(expected);
+
+        FileHandle targetHandle = files.absolute(targetPath);
+        targetHandle.createNewFile();
+        sourceHandle.transferTo(targetHandle.getOutputStream(false));
+
+        assertThat(targetHandle.readString()).isEqualTo(expected);
+    }
+
+    public void testCreateNewFileTwice() throws Exception {
         files.sdcard(testDirectory).deleteChildren();
         String path = testDirectory + "/" + "foo.txt";
         FileHandle handle = files.sdcard(path);
