@@ -1,6 +1,6 @@
-[![MIT License][license-image]][license-url]
 [![Build Status][travis-image]][travis-url]
 [![Coverage Status][coverage-image]][coverage-url]
+[![MIT License][license-image]][license-url]
 
 Core
 
