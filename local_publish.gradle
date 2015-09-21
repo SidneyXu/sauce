@@ -3,23 +3,20 @@ apply plugin: 'signing'
 
 def isReleaseBuild = !VERSION_NAME.endsWith('-SNAPSHOT')
 
-def getReleaseRepositoryUrl() {
-    return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
-            : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+task zipRelease(type: Zip) {
+    from localReleaseDest
+    destinationDir buildDir
+    archiveName "release-${version}.zip"
 }
 
-def getSnapshotRepositoryUrl() {
-    return hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
-            : "https://oss.sonatype.org/content/repositories/snapshots/"
+task generateRelease << {
+    println "Release ${version} can be found at ${localReleaseDest}/"
+    println "Release ${version} zipped can be found ${buildDir}/release-${version}.zip"
 }
 
-def getRepositoryUsername() {
-    return hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : ""
-}
+generateRelease.dependsOn(uploadArchives)
+generateRelease.dependsOn(zipRelease)
 
-def getRepositoryPassword() {
-    return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
-}
 
 afterEvaluate { project ->
     uploadArchives {
@@ -31,12 +28,7 @@ afterEvaluate { project ->
                     MavenDeployment deployment -> signing.signPom(deployment)
                 }
 
-                repository(url: getReleaseRepositoryUrl()) {
-                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
-                }
-                snapshotRepository(url: getSnapshotRepositoryUrl()) {
-                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
-                }
+                repository(url: "file://${localReleaseDest}")
 
                 pom.groupId = POM_GROUP_ID
                 pom.artifactId = POM_ARTIFACT_ID

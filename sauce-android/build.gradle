@@ -1,8 +1,12 @@
+import com.android.builder.core.BuilderConstants
+
 apply plugin: 'com.android.library'
 
-def localReleaseDest = "${buildDir}/release/${VERSION_NAME}"
+ext.localReleaseDest = "${buildDir}/release/${VERSION_NAME}"
+version = VERSION_NAME
 
 apply plugin: 'com.github.kt3k.coveralls'
+
 
 buildscript {
     repositories {
@@ -53,10 +57,14 @@ dependencies {
     compile "com.android.support:appcompat-v7:${rootProject.ext.appcompatVersion}"
     androidTestCompile 'com.squareup.assertj:assertj-android:1.1.0'
     compile project(':sauce-core')
+
+    //test
+    provided 'com.github.bumptech.glide:glide:3.6.1'
+//    provided 'com.android.support:support-v4:19.1.0'
 }
 
 android.libraryVariants.all { variant ->
-    task("generate${variant.name}Javadoc", type: Javadoc) {
+    def javadoc = task("generate${variant.name}Javadoc", type: Javadoc) {
         description "Generates Javadoc for $variant.name."
         source = variant.javaCompile.source
         ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
@@ -70,13 +78,13 @@ android.libraryVariants.all { variant ->
         exclude "**/BuildConfig.java"
     }
 
-    task("javadoc${variant.name}", type: Jar) {
+    def javadocJar = task("javadoc${variant.name}", type: Jar) {
         classifier = "javadoc"
         description "Bundles Javadoc into a JAR file for $variant.name."
         from tasks["generate${variant.name}Javadoc"]
     }
 
-    task("jar${variant.name}", type: Jar) {
+    def jar = task("jar${variant.name}", type: Jar) {
         description "Bundles compiled .class files into a JAR file for $variant.name."
         dependsOn variant.javaCompile
         from variant.javaCompile.destinationDir
@@ -92,16 +100,10 @@ android.libraryVariants.all { variant ->
         exclude '**/BuildConfig.class'
     }
 
-}
-
-task androidJavadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
-
-task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
-    classifier = 'javadoc'
-    from androidJavadocs.destinationDir
+    if (name.equals(BuilderConstants.RELEASE)) {
+        artifacts.add('archives', jar);
+        artifacts.add('archives', javadocJar);
+    }
 }
 
 task androidSourcesJar(type: Jar) {
@@ -109,36 +111,13 @@ task androidSourcesJar(type: Jar) {
     from android.sourceSets.main.java.sourceFiles
 }
 
-task zipRelease(type: Zip) {
-    from localReleaseDest
-    destinationDir buildDir
-    archiveName "release-${version}.zip"
-}
-
-task generateRelease << {
-    println "Release ${version} can be found at ${localReleaseDest}/"
-    println "Release ${version} zipped can be found ${buildDir}/release-${version}.zip"
-}
-
-generateRelease.dependsOn(uploadArchives)
-generateRelease.dependsOn(zipRelease)
-
 artifacts {
     archives androidSourcesJar
-    archives androidJavadocsJar
 }
 
-//task connectedDebugAndroidTest{
-//configurations {
-//    println reports.getClass()
-//    reports {
-//        xml.enabled = true
-//        csv.enabled = true
-//    }
-//}
-//}
-
 apply from: '../mvn_publish.gradle'
+//apply from: '../local_publish.gradle'
+
 //apply from: '../jacoco.gradle'
 //
 //// jacoco start

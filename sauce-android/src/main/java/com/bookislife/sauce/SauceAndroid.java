@@ -1,6 +1,8 @@
 package com.bookislife.sauce;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import com.bookislife.sauce.files.AndroidFileHandles;
 import com.bookislife.sauce.files.FileHandles;
 
@@ -14,6 +16,8 @@ public class SauceAndroid extends SaucePlatform {
     public final Context context;
 
     private static SauceAndroid current;
+
+    private Handler mainHandler;
 
     public static SauceAndroid getInstance() {
         if (null == current) {
@@ -30,6 +34,7 @@ public class SauceAndroid extends SaucePlatform {
     public SauceAndroid(Context context) {
         this.context = context.getApplicationContext();
         current = this;
+        mainHandler = new Handler(Looper.getMainLooper());
     }
 
     /**
@@ -40,5 +45,9 @@ public class SauceAndroid extends SaucePlatform {
     @Override
     protected FileHandles getFiles() {
         return new AndroidFileHandles();
+    }
+
+    public void post(Runnable runnable) {
+        mainHandler.post(runnable);
     }
 }

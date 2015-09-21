@@ -114,6 +114,7 @@ public final class AndroidFileHandles implements FileHandles {
     /**
      * Construct the FileHandle with the specified path (first + more).
      * <p></p>File locates in "sdcard/first/more...".
+     *
      * @param first the first file path
      * @param more  the more file path
      * @return a FileHandle instance
@@ -129,8 +130,8 @@ public final class AndroidFileHandles implements FileHandles {
      * @param path the file path
      * @return a FileHandle instance
      */
-    public FileHandle sdcard(String path) {
-        return external(path);
+    public AndroidFileHandle sdcard(String path) {
+        return (AndroidFileHandle) external(path);
     }
 
     /**
@@ -140,8 +141,8 @@ public final class AndroidFileHandles implements FileHandles {
      * @param path the file path
      * @return a FileHandle instance
      */
-    public FileHandle assets(String path) {
-        return internal(path);
+    public AndroidFileHandle assets(String path) {
+        return (AndroidFileHandle) internal(path);
     }
 
     /**
@@ -152,8 +153,8 @@ public final class AndroidFileHandles implements FileHandles {
      * @param more  the more file path
      * @return a FileHandle instance
      */
-    public FileHandle assets(String first, String... more) {
-        return internal(first, more);
+    public AndroidFileHandle assets(String first, String... more) {
+        return (AndroidFileHandle) internal(first, more);
     }
 
     /**
@@ -176,7 +177,7 @@ public final class AndroidFileHandles implements FileHandles {
      * @param path the file path
      * @return a FileHandle instance
      */
-    public FileHandle files(String path) {
+    public AndroidFileHandle files(String path) {
         return new AndroidFileHandle(FileType.FILES, path);
     }
 
@@ -189,7 +190,7 @@ public final class AndroidFileHandles implements FileHandles {
      * @param more  the more file path
      * @return a FileHandle instance
      */
-    public FileHandle files(String first, String... more) {
+    public AndroidFileHandle files(String first, String... more) {
         return files(IOUtils.constructorPath(first, more));
     }
 
@@ -200,7 +201,7 @@ public final class AndroidFileHandles implements FileHandles {
      * @param path the file path
      * @return a FileHandle instance
      */
-    public FileHandle caches(String path) {
+    public AndroidFileHandle caches(String path) {
         return new AndroidFileHandle(FileType.CACHE, path);
     }
 
@@ -213,7 +214,7 @@ public final class AndroidFileHandles implements FileHandles {
      * @param more  the more file path
      * @return a FileHandle instance
      */
-    public FileHandle caches(String first, String... more) {
-        return caches(IOUtils.constructorPath(first, more));
+    public AndroidFileHandle caches(String first, String... more) {
+        return (AndroidFileHandle) caches(IOUtils.constructorPath(first, more));
     }
 }

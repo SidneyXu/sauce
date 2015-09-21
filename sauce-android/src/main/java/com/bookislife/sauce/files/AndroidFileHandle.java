@@ -1,6 +1,7 @@
 package com.bookislife.sauce.files;
 
 import android.content.Context;
+import android.net.Uri;
 import com.bookislife.sauce.SauceAndroid;
 import com.bookislife.sauce.utils.AndroidIOUtils;
 import com.bookislife.sauce.utils.IOUtils;
@@ -45,7 +46,8 @@ public class AndroidFileHandle extends FileHandle {
                 file = new File(context.getCacheDir(), fileName);
                 break;
             case ASSETS:
-                file = new File("//assets/" + fileName);
+                //                file = new File("//assets/" + fileName);
+                file = new File(fileName);
                 break;
             default:
                 file = new File(fileName);
@@ -630,4 +632,12 @@ public class AndroidFileHandle extends FileHandle {
         return false;
     }
 
+    public Uri toUri() {
+        switch (fileType) {
+            case ASSETS:
+                return Uri.parse("file:///android_asset/" + file.getPath());
+            default:
+                return Uri.fromFile(file);
+        }
+    }
 }

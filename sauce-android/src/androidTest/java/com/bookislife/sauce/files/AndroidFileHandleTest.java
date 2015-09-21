@@ -494,6 +494,28 @@ public class AndroidFileHandleTest extends BaseTestCase {
         assertThat(sourceHandle.tryReadString()).isNull();
     }
 
+    public void testMoveToExistPath() throws Exception {
+        String sourcePath = testDirectory + "/" + "source.txt";
+        String targetPath = testDirectory + "/" + "target.txt";
+
+        String expected = "this is a test sentence";
+        FileHandle sourceHandle = files.sdcard(sourcePath);
+        sourceHandle.writeString(expected);
+
+        FileHandle targetHandle = files.sdcard(targetPath);
+        sourceHandle.moveTo(targetHandle);
+
+        try {
+            sourceHandle = files.sdcard(sourcePath);
+            sourceHandle.writeString(expected);
+
+            sourceHandle.moveTo(targetHandle);
+            fail("Move should failed because of the target exists.");
+        } catch (RuntimeException e) {
+            assertThat(e).isNotNull().hasMessageContaining("exists");
+        }
+    }
+
     public void testMoveDirectoryTo() throws Exception {
 
     }
@@ -521,6 +543,25 @@ public class AndroidFileHandleTest extends BaseTestCase {
         assertThat(sourceHandle.readString()).isEqualTo(expected);
     }
 
+    public void testCopyToExistPath() throws Exception {
+        String sourcePath = testDirectory + "/" + "source.txt";
+        String targetPath = testDirectory + "/" + "target.txt";
+
+        String expected = "this is a test sentence";
+        FileHandle sourceHandle = files.sdcard(sourcePath);
+        sourceHandle.writeString(expected);
+
+        FileHandle targetHandle = files.sdcard(targetPath);
+        sourceHandle.copyTo(targetHandle);
+
+        try {
+            sourceHandle.copyTo(targetHandle);
+            fail("Copy should failed because of the target exists.");
+        } catch (RuntimeException e) {
+            assertThat(e).isNotNull().hasMessageContaining("exists");
+        }
+    }
+
     public void testCopyDirectoryTo() throws Exception {
 
     }
@@ -546,5 +587,14 @@ public class AndroidFileHandleTest extends BaseTestCase {
         FileHandle handle = files.sdcard(path);
         assertThat(handle.createNewFile()).isTrue();
         assertThat(handle.createNewFile()).isFalse();
+    }
+
+    public void testToUri() {
+        String path = "foo.txt";
+        AndroidFileHandle handle = files.assets(path);
+        assertThat(handle.toUri().toString()).isEqualTo("file://android_asset/" + path);
+
+        AndroidFileHandle handle2 = files.sdcard(path);
+        assertThat(handle.toUri().toString()).isEqualTo(handle2.toFile().getAbsolutePath());
     }
 }
