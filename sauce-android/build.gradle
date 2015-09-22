@@ -165,3 +165,6 @@ apply from: '../mvn_publish.gradle'
 coveralls.jacocoReportPath = "${buildDir}/reports/coverage/debug/report.xml"
 
 //endregion
+
+//apply from: "${profile}-profile.gradle"
+//gradle -Pprofile=dev tasks
