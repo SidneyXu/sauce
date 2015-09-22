@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Looper;
 import com.bookislife.sauce.files.AndroidFileHandles;
 import com.bookislife.sauce.files.FileHandles;
+import com.bookislife.sauce.providers.ImageProvider;
+import com.bookislife.sauce.providers.Providers;
 
 /**
  * The class represents Android platform of the sauce Library.
@@ -13,11 +15,15 @@ import com.bookislife.sauce.files.FileHandles;
  */
 public class SauceAndroid extends SaucePlatform {
 
+    public static final int IMAGE_PROVIDER = 1000;
+
     public final Context context;
 
     private static SauceAndroid current;
 
     private Handler mainHandler;
+
+    private ImageProvider.ImageProviderSelector imageProviderSelector;
 
     public static SauceAndroid getInstance() {
         if (null == current) {
@@ -35,6 +41,7 @@ public class SauceAndroid extends SaucePlatform {
         this.context = context.getApplicationContext();
         current = this;
         mainHandler = new Handler(Looper.getMainLooper());
+        imageProviderSelector = new ImageProvider.ImageProviderSelector();
     }
 
     /**
@@ -45,6 +52,19 @@ public class SauceAndroid extends SaucePlatform {
     @Override
     protected FileHandles getFiles() {
         return new AndroidFileHandles();
+    }
+
+    @Override
+    protected Providers getProviders() {
+        throw new UnsupportedOperationException("Use getProviders(Context context) instead.");
+    }
+
+    protected Providers getProviders(Context context) {
+        switch (IMAGE_PROVIDER) {
+            return imageProviderSelector.getImageProvider(context);
+            default:
+                throw new IllegalArgumentException("Illegal arguments.");
+        }
     }
 
     public void post(Runnable runnable) {

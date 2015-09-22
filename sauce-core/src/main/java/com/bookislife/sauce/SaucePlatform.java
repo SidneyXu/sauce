@@ -1,6 +1,7 @@
 package com.bookislife.sauce;
 
 import com.bookislife.sauce.files.FileHandles;
+import com.bookislife.sauce.providers.Providers;
 
 /**
  * The class represents a specified platform of the sauce Library.
@@ -29,4 +30,6 @@ public abstract class SaucePlatform {
      * @return the FileHandles instance of specified platform
      */
     protected abstract FileHandles getFiles();
+
+    protected abstract Providers getProviders();
 }

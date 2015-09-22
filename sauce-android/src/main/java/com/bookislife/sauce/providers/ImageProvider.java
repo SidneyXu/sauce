@@ -9,7 +9,7 @@ import com.bookislife.sauce.files.AndroidFileHandle;
 /**
  * Created by SidneyXu on 2015/09/18.
  */
-public abstract class ImageProvider {
+public abstract class ImageProvider extends Providers {
 
     protected Context context;
     protected AndroidFileHandle fileHandle;
@@ -53,5 +53,12 @@ public abstract class ImageProvider {
             imageProvider.execute(this);
         }
 
+    }
+
+    public static class ImageProviderSelector {
+
+        public ImageProvider getImageProvider(Context context) {
+            return new GlideImageProvider(context);
+        }
     }
 }
