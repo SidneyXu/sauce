@@ -168,3 +168,8 @@ coveralls.jacocoReportPath = "${buildDir}/reports/coverage/debug/report.xml"
 
 //apply from: "${profile}-profile.gradle"
 //gradle -Pprofile=dev tasks
+
+
+def env = hasProperty("env") ?: "dev"
+//apply from:
+
