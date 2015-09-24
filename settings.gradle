@@ -1,4 +1,4 @@
 rootProject.name = 'sauce'
-include ':sauce-core'
+include ':sauce-core', ':sample'
 include ':sauce-android'
 

@@ -60,11 +60,11 @@ public class SauceAndroid extends SaucePlatform {
     }
 
     protected Providers getProviders(Context context) {
-        switch (IMAGE_PROVIDER) {
+//        switch (IMAGE_PROVIDER) {
             return imageProviderSelector.getImageProvider(context);
-            default:
-                throw new IllegalArgumentException("Illegal arguments.");
-        }
+            //            default:
+            //                throw new IllegalArgumentException("Illegal arguments.");
+//        }
     }
 
     public void post(Runnable runnable) {
