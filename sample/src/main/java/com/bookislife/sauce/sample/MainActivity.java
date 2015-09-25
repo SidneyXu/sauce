@@ -1,17 +1,48 @@
 package com.bookislife.sauce.sample;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import com.bookislife.sauce.Sauce;
+import com.bookislife.sauce.files.AndroidFileHandles;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        findViewById(R.id.click1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                try {
+                    FileOutputStream fileOutputStream = openFileOutput("test.txt", MODE_PRIVATE);
+                    fileOutputStream.write("hello world".getBytes());
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        findViewById(R.id.click2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                try {
+                    ((AndroidFileHandles) Sauce.files).files("foo.txt").writeString("hello world");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
 
 

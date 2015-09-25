@@ -39,7 +39,7 @@ artifacts {
     archives sourcesJar
 }
 
-apply from: '../mvn_publish.gradle'
+apply from: '../dev_publish.gradle'
 
 // jacoco start
 apply plugin: 'jacoco'
@@ -74,3 +74,45 @@ jacocoTestReport {
         }
     }
 }
+
+bintray {
+    user = BINTRAY_USER_NAME
+    key = BINTRAY_API_KEY
+    pkg {
+        repo = 'maven'
+        name = POM_NAME
+        desc = POM_DESCRIPTION
+        websiteUrl = POM_URL
+        issueTrackerUrl = POM_URL + '/issues'
+        vcsUrl = POM_SCM_URL
+        licenses = [POM_LICENCE_NAME]
+        publicDownloadNumbers = true
+    }
+    version {
+        name = VERSION_NAME
+        //Optional configuration for GPG signing
+        gpg {
+            sign = true
+            passphrase = 'passphrase' //Optional. The passphrase for GPG signing'
+        }
+        //Optional configuration for Maven Central sync of the version
+        mavenCentralSync {
+            sync = true
+            user = SONATYPE_USERNAME
+            password = SONATYPE_PASSWORD
+        }
+    }
+//    publications = ['MyPublication']
+    configurations = ['archives']
+}
+
+//publishing {
+//    publications {
+//        MyPublication(MavenPublication) {
+//            from components.java
+//            groupId 'org.jfrog.gradle.sample'
+//            artifactId 'gradle-project'
+//            version '1.1'
+//        }
+//    }
+//}

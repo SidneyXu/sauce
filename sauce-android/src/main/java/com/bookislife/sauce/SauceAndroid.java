@@ -8,6 +8,8 @@ import com.bookislife.sauce.files.FileHandles;
 import com.bookislife.sauce.providers.ImageProvider;
 import com.bookislife.sauce.providers.Providers;
 
+import java.util.Date;
+
 /**
  * The class represents Android platform of the sauce Library.
  *

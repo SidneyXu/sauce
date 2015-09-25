@@ -56,11 +56,10 @@ android {
 dependencies {
     compile "com.android.support:appcompat-v7:${rootProject.ext.appcompatVersion}"
     androidTestCompile 'com.squareup.assertj:assertj-android:1.1.0'
-    compile project(':sauce-core')
-
+    compile project(":sauce-core")
     //test
     provided 'com.github.bumptech.glide:glide:3.6.1'
-//    provided 'com.android.support:support-v4:19.1.0'
+    //    provided 'com.android.support:support-v4:19.1.0'
 }
 
 android.libraryVariants.all { variant ->
@@ -115,50 +114,9 @@ artifacts {
     archives androidSourcesJar
 }
 
-apply from: '../mvn_publish.gradle'
+//apply from: '../mvn_publish.gradle'
+apply from: '../dev_publish.gradle'
 //apply from: '../local_publish.gradle'
-
-//apply from: '../jacoco.gradle'
-//
-//// jacoco start
-//apply plugin: 'jacoco'
-//
-//jacoco {
-//    toolVersion "0.7.1.201405082137"
-//
-////    reportsDir = file("$buildDir/customJacocoReportDir")
-//}
-//
-//task jacocoTestReport(type: JacocoReport, dependsOn: "connectedDebugAndroidTest") {
-//    group = "Reporting"
-//    description = "Generate Jacoco coverage reports"
-//
-//    classDirectories = fileTree(
-//            dir: "${buildDir}/intermediates/classes/debug",
-//            excludes: ['**/R.class',
-//                       '**/R$*.class',
-//                       '**/BuildConfig.*']
-//    )
-//
-//    sourceDirectories = files("${buildDir.parent}/src/main/java")
-//    additionalSourceDirs = files([
-//            "${buildDir}/generated/source/buildConfig/debug",
-//            "${buildDir}/generated/source/r/debug"
-//    ])
-//    executionData = files("${buildDir}/jacoco/connectedDebugAndroidTest.exec")
-//
-//    reports {
-//        xml.enabled = true
-//        html.enabled = true
-//        xml {
-//            destination "${buildDir}/reports/jacoco/${project.name}/jacocoTestReport.xml"
-//        }
-//        html {
-//            destination "${buildDir}/reports/jacoco/${project.name}"
-//        }
-//    }
-//}
-// jacoco end
 
 //region Coveralls
 
@@ -169,7 +127,6 @@ coveralls.jacocoReportPath = "${buildDir}/reports/coverage/debug/report.xml"
 //apply from: "${profile}-profile.gradle"
 //gradle -Pprofile=dev tasks
 
-
-def env = hasProperty("env") ?: "dev"
+//def env = hasProperty("env") ?: "dev"
 //apply from:
 
