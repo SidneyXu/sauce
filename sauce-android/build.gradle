@@ -50,7 +50,6 @@ android {
         exclude 'asm-license.txt'
         exclude 'mockito-extensions/org.mockito.plugins.MockMaker'
     }
-
 }
 
 dependencies {
@@ -115,7 +114,7 @@ artifacts {
 }
 
 //apply from: '../mvn_publish.gradle'
-apply from: '../dev_publish.gradle'
+//apply from: '../dev_publish.gradle'
 //apply from: '../local_publish.gradle'
 
 //region Coveralls

@@ -1,0 +1,37 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.3.1'
+    }
+}
+apply plugin: 'com.jfrog.bintray'
+
+bintray {
+    user = BINTRAY_USER_NAME
+    key = BINTRAY_API_KEY
+    pkg {
+        repo = PKG_REPO
+        name = POM_NAME
+        desc = POM_DESCRIPTION
+        websiteUrl = POM_URL
+        issueTrackerUrl = POM_URL + '/issues'
+        vcsUrl = POM_SCM_URL
+        licenses = [LICENCE_NAME]
+        publicDownloadNumbers = true
+
+        version {
+            name = VERSION_NAME
+            gpg {
+                sign = true
+            }
+            mavenCentralSync {
+                sync = true
+                user = SONATYPE_USERNAME
+                password = SONATYPE_PASSWORD
+            }
+        }
+    }
+    configurations = ['archives']
+}
