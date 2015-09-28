@@ -1,3 +1,17 @@
+/*
+ * Usage
+ *
+ * 1. Includes the following sentences in your build.gradle file.
+ *
+ * ext.localReleaseDest = "${buildDir}/release/${VERSION_NAME}"
+ * apply from: '../local_publish.gradle'
+ *
+ * 2. Run
+ *
+ * gradle upload
+ *
+ */
+
 apply plugin: 'maven'
 apply plugin: 'signing'
 

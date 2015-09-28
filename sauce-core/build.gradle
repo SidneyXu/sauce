@@ -1,7 +1,5 @@
 apply plugin: 'java'
 
-ext.localReleaseDest = "${buildDir}/release/${VERSION_NAME}"
-
 group = POM_GROUP_ID
 version = VERSION_NAME
 

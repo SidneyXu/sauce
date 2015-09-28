@@ -1,12 +1,10 @@
 import com.android.builder.core.BuilderConstants
 
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.kt3k.coveralls'
 
 ext.localReleaseDest = "${buildDir}/release/${VERSION_NAME}"
 version = VERSION_NAME
-
-apply plugin: 'com.github.kt3k.coveralls'
-
 
 buildscript {
     repositories {
