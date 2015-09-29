@@ -1,5 +1,5 @@
-//group 'com.bookislife'
-//version '0.0.1-SNAPSHOT'
+group = POM_GROUP_ID
+version = VERSION_NAME
 
 buildscript {
     repositories {

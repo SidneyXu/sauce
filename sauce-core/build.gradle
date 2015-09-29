@@ -1,7 +1,14 @@
 apply plugin: 'java'
+apply plugin: 'com.github.kt3k.coveralls'
 
-group = POM_GROUP_ID
-version = VERSION_NAME
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.4.0x'
+    }
+}
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -37,6 +44,7 @@ artifacts {
     archives sourcesJar
 }
 
+//maven central
 apply from: '../dev_publish.gradle'
 
 // jacoco start
@@ -72,4 +80,4 @@ jacocoTestReport {
         }
     }
 }
-
+// jacoco end

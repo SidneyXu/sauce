@@ -3,9 +3,6 @@ import com.android.builder.core.BuilderConstants
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.kt3k.coveralls'
 
-ext.localReleaseDest = "${buildDir}/release/${VERSION_NAME}"
-version = VERSION_NAME
-
 buildscript {
     repositories {
         jcenter()
@@ -111,19 +108,11 @@ artifacts {
     archives androidSourcesJar
 }
 
-//apply from: '../mvn_publish.gradle'
-//apply from: '../dev_publish.gradle'
-//apply from: '../local_publish.gradle'
+//maven central
+apply from: '../dev_publish.gradle'
 
 //region Coveralls
 
 coveralls.jacocoReportPath = "${buildDir}/reports/coverage/debug/report.xml"
 
 //endregion
-
-//apply from: "${profile}-profile.gradle"
-//gradle -Pprofile=dev tasks
-
-//def env = hasProperty("env") ?: "dev"
-//apply from:
-
