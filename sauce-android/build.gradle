@@ -116,3 +116,5 @@ apply from: '../dev_publish.gradle'
 coveralls.jacocoReportPath = "${buildDir}/reports/coverage/debug/report.xml"
 
 //endregion
+
+//apply from: '../jacoco.gradle'
