@@ -22,4 +22,8 @@ public class Sauce {
         Sauce.platform = platform;
         files = platform.files;
     }
+
+    public static SaucePlatform getPlatform() {
+        return platform;
+    }
 }

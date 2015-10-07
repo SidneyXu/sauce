@@ -31,5 +31,5 @@ public abstract class SaucePlatform {
      */
     protected abstract FileHandles getFiles();
 
-    protected abstract Providers getProviders();
+    public abstract Providers getProviders(String type);
 }

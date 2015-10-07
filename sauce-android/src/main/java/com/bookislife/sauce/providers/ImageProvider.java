@@ -20,7 +20,7 @@ public abstract class ImageProvider extends Providers {
 
     protected abstract void execute(ImageRequest request);
 
-    protected ImageRequest load(AndroidFileHandle fileHandle) {
+    public ImageRequest load(AndroidFileHandle fileHandle) {
         this.fileHandle = fileHandle;
         return new ImageRequest(this)
                 .load(fileHandle.toUri());

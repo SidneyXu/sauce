@@ -8,8 +8,6 @@ import com.bookislife.sauce.files.FileHandles;
 import com.bookislife.sauce.providers.ImageProvider;
 import com.bookislife.sauce.providers.Providers;
 
-import java.util.Date;
-
 /**
  * The class represents Android platform of the sauce Library.
  *
@@ -17,7 +15,7 @@ import java.util.Date;
  */
 public class SauceAndroid extends SaucePlatform {
 
-    public static final int IMAGE_PROVIDER = 1000;
+    public static final String IMAGE_PROVIDER = "SauceAndroidImageProvider";
 
     public final Context context;
 
@@ -57,16 +55,17 @@ public class SauceAndroid extends SaucePlatform {
     }
 
     @Override
-    protected Providers getProviders() {
+    public Providers getProviders(String type) {
         throw new UnsupportedOperationException("Use getProviders(Context context) instead.");
     }
 
-    protected Providers getProviders(Context context) {
-//        switch (IMAGE_PROVIDER) {
-            return imageProviderSelector.getImageProvider(context);
-            //            default:
-            //                throw new IllegalArgumentException("Illegal arguments.");
-//        }
+    public Providers getProviders(Context context, String type) {
+        switch (type) {
+            case IMAGE_PROVIDER:
+                return imageProviderSelector.getImageProvider(context);
+            default:
+                throw new IllegalArgumentException("Illegal arguments.");
+        }
     }
 
     public void post(Runnable runnable) {

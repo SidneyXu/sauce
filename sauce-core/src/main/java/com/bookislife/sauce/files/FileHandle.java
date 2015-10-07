@@ -238,4 +238,6 @@ public abstract class FileHandle extends SourceHandle {
 
     public abstract boolean copyDirectoryTo(FileHandle target);
 
+    public abstract String extension();
+
 }

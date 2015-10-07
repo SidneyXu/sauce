@@ -1,0 +1,25 @@
+Design
+
+1.File
+Sauce.files.internal(path)
+
+((AndroidFileHandles)Sauce.files).assets(path)
+=> SauceAndroid.files.assets(path)
+
+2.Image
+ImageProvider provider = Sauce.getProvider(ImageProvider)
+
+ImageProvider provider = ((Android)(Sauce.getPlatform())getProvider(context, ImageProvider)
+=> SauceAndroid.getProvider(context, ImageProvider)
+
+provider.load(imageRequest)
+
+ImageRequest.from(fileHandle).placeHolder(icon).into(imageView)
+
+SauceAndroid.files.readBitmap()
+
+3.Net
+Sauce.net.from(url).readString()
+Sauce.net.from(url).writeToFile(file)
+
+HttpProvider provider = SauceAndroid.getProvider(context, HttpProvider)

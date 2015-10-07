@@ -163,7 +163,7 @@ public class AndroidFileHandle extends FileHandle {
     public boolean delete() {
         switch (fileType) {
             case ASSETS:
-                throw new RuntimeException("Location is read only.");
+                throw new UnsupportedOperationException("Location is read only.");
             default:
                 return IOUtils.deleteFile(file);
         }
@@ -176,7 +176,7 @@ public class AndroidFileHandle extends FileHandle {
     public void deleteChildren() {
         switch (fileType) {
             case ASSETS:
-                throw new RuntimeException("Location is read only.");
+                throw new UnsupportedOperationException("Location is read only.");
             default:
                 IOUtils.deleteChildren(file);
         }
@@ -189,7 +189,7 @@ public class AndroidFileHandle extends FileHandle {
     public void deleteDirectory() {
         switch (fileType) {
             case ASSETS:
-                throw new RuntimeException("Location is read only.");
+                throw new UnsupportedOperationException("Location is read only.");
             default:
                 IOUtils.recursiveDelete(file);
         }
@@ -630,6 +630,14 @@ public class AndroidFileHandle extends FileHandle {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String extension() {
+        String name = file.getName();
+        int dotIndex = name.lastIndexOf('.');
+        if (dotIndex == -1) return name;
+        return name.substring(0, dotIndex);
     }
 
     public Uri toUri() {
