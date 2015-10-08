@@ -6,7 +6,7 @@ package com.bookislife.sauce.exception;
  *
  * @author SidneyXu
  */
-public class SauceException {
+public class SauceException extends Exception {
 
     private int code;
     private String msg;
@@ -18,6 +18,10 @@ public class SauceException {
 
     public SauceException(String msg) {
         this(-1, msg);
+    }
+
+    public SauceException(final Throwable cause) {
+        super(cause);
     }
 
     public int getCode() {
