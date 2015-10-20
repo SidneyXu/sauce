@@ -3,7 +3,6 @@ package com.bookislife.sauce.web;
 import com.bookislife.sauce.SourceHandle;
 import com.bookislife.sauce.exception.SauceException;
 import com.bookislife.sauce.exception.SauceTimeoutException;
-import com.oracle.javafx.jmx.json.JSONDocument;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,25 +56,26 @@ public class HttpHandle extends SourceHandle {
 
     public void test() {
         //tdd develop
-        HttpHandle httpHandle = new HttpHandle(new HttpHandle.Builder());
-        httpHandle.request("http://jsonplaceholder.typicode.com",
-                METHOD_GET, JSONDocument.class, new RequestHandler() {
-
-                    @Override
-                    public String beforeRequest(String basePath, Map<String, String> query) {
-                        query.put("v", "1.0");
-                        query.put("q", "Calvin and Hobbes");
-                        return basePath + "/posts/1";
-                    }
-
-                    @Override
-                    ResponseHandler handleResponse(byte[] response) {
-                        return null;
-                    }
-                });
+        //        HttpHandle httpHandle = new HttpHandle(new HttpHandle.Builder());
+        //        httpHandle.request("http://jsonplaceholder.typicode.com",
+        //                METHOD_GET, JSONDocument.class, new RequestHandler() {
+        //
+        //                    @Override
+        //                    public String beforeRequest(String basePath, Map<String, String> query) {
+        //                        query.put("v", "1.0");
+        //                        query.put("q", "Calvin and Hobbes");
+        //                        return basePath + "/posts/1";
+        //                    }
+        //
+        //                    @Override
+        //                    ResponseHandler handleResponse(byte[] response) {
+        //                        return null;
+        //                    }
+        //                });
     }
 
-    public void request(String url, String method, Class<?> returnType, RequestHandler requestHandler) {
+    public void request(String url, String method, Class<?> returnType,
+                        RequestHandler requestHandler) {
 
     }
 
