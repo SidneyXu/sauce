@@ -2,10 +2,14 @@ package com.bookislife.sauce.web;
 
 import com.bookislife.sauce.SourceHandle;
 import com.bookislife.sauce.exception.SauceException;
+import com.bookislife.sauce.exception.SauceServerException;
 import com.bookislife.sauce.exception.SauceTimeoutException;
+import com.bookislife.sauce.utils.IOUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -33,6 +37,8 @@ public class HttpHandle extends SourceHandle {
     private static final int DEFAULT_TIMEOUT = 15 * 1000;
     private static final int DEFAULT_BUFFER_SIZE = 4098;
     private int bufferSize = DEFAULT_BUFFER_SIZE;
+
+    public static final String CONTENT_TYPE_JSON = "application/json";
 
     public static final String METHOD_GET = "GET";
     public static final String METHOD_POST = "POST";
@@ -74,16 +80,66 @@ public class HttpHandle extends SourceHandle {
         //                });
     }
 
-    public void request(String url, String method, Class<?> returnType,
-                        RequestHandler requestHandler) {
+    public void request(String url, String method, InputStream bodyStream, Class<?> returnType,
+                        RequestHandler requestHandler) throws SauceException {
+        HttpURLConnection connection = null;
+        OutputStream outputStream = null;
+        InputStream responseStream = null;
+        try {
+            connection = createConnection();
+            if (bodyStream != null && (METHOD_POST.equals(method) || METHOD_PUT.equals(method))) {
+                outputStream = connection.getOutputStream();
+                byte[] buffer = new byte[bufferSize];
+                int len;
+                while ((len = bodyStream.read(buffer)) > 0) {
+                    outputStream.write(buffer, 0, len);
+                }
+                outputStream.flush();
+                outputStream.close();
+                outputStream = null;
+            }
 
+            responseStream = getResponseStream(connection);
+
+            // TODO: 15/10/22  
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            IOUtils.copyTo(responseStream, byteArrayOutputStream, 1024);
+            byte[] data = byteArrayOutputStream.toByteArray();
+
+        } catch (SocketTimeoutException e) {
+            throw new SauceTimeoutException();
+        } catch (IOException e) {
+            throw new SauceException(e);
+        } finally {
+            if (null != bodyStream) {
+                try {
+                    bodyStream.close();
+                } catch (IOException e) {
+                }
+            }
+            if (null != outputStream) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                }
+            }
+            if (null != responseStream) {
+                try {
+                    responseStream.close();
+                } catch (IOException e) {
+                }
+            }
+            if (null != connection) {
+                connection.disconnect();
+            }
+        }
     }
 
     public byte[] readBytes() throws SauceException {
         HttpURLConnection connection = null;
         InputStream inputStream = null;
         try {
-            connection = buildConnection();
+            connection = createConnection();
             inputStream = getInputStream(connection);
             int totalLen = connection.getHeaderFieldInt("Content-Length", 0);
             return handleStream(totalLen, inputStream);
@@ -106,9 +162,9 @@ public class HttpHandle extends SourceHandle {
         }
     }
 
-    private HttpURLConnection buildConnection() throws IOException {
+    private HttpURLConnection createConnection() throws IOException {
         URL url;
-        if (this.url == null) {
+        if (null != this.url) {
             url = new URL(getRealPath());
         } else {
             url = this.url;
@@ -120,14 +176,30 @@ public class HttpHandle extends SourceHandle {
         if (METHOD_POST.equals(method.toUpperCase(Locale.ENGLISH)) ||
                 METHOD_PUT.equals(method.toUpperCase(Locale.ENGLISH))) {
             connection.setDoOutput(true);
+            connection.setUseCaches(false);
         }
         connection.setRequestMethod(method);
-        if (headers != null) {
+        if (null != headers) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
                 connection.setRequestProperty(entry.getKey(), entry.getValue());
             }
         }
         return connection;
+    }
+
+    private InputStream getResponseStream(HttpURLConnection connection) throws IOException, SauceException {
+        InputStream inputStream = connection.getErrorStream();
+        if (inputStream != null) {
+            int len;
+            byte[] buff = new byte[1024];
+            StringBuilder sb = new StringBuilder();
+            while ((len = inputStream.read(buff)) > 0) {
+                sb.append(new String(buff, 0, len));
+            }
+            throw new SauceServerException(connection.getResponseCode(), sb.toString());
+        }
+        inputStream = connection.getInputStream();
+        return inputStream;
     }
 
     private InputStream getInputStream(
@@ -148,7 +220,7 @@ public class HttpHandle extends SourceHandle {
 
     private String getRealPath() {
         String tempPath = path;
-        if (params != null && !params.isEmpty()) {
+        if (null != params && !params.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (Map.Entry<String, String> entry : params.entrySet()) {
                 sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
