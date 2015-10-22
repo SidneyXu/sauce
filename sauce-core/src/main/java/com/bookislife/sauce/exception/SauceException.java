@@ -8,7 +8,7 @@ package com.bookislife.sauce.exception;
  */
 public class SauceException extends Exception {
 
-    private int code;
+    protected int code;
     private String msg;
 
     public SauceException(int code, String msg) {

@@ -18,4 +18,9 @@ public class SauceServerException extends SauceException {
     public SauceServerException(Throwable cause) {
         super(cause);
     }
+
+    public SauceServerException(int code, Throwable cause) {
+        super(cause);
+        this.code = code;
+    }
 }

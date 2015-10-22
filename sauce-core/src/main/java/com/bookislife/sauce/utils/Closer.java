@@ -9,27 +9,37 @@ import java.util.Stack;
  */
 public class Closer {
 
-    private final Stack<Closeable> targets=new Stack<>();
+    private final Stack<Closeable> targets = new Stack<>();
 
-    public <T extends Closeable> T put(T closeable){
-        if(null==closeable)return closeable;
+    private volatile boolean isClosed = false;
+
+    public Closer() {
+    }
+
+    public Closer(Closeable closeable) {
+        wrap(closeable);
+    }
+
+    public <T extends Closeable> T wrap(T closeable) {
+        if (null == closeable) return null;
         targets.push(closeable);
         return closeable;
     }
 
-    public void close(){
-        while (!targets.isEmpty()){
-            Closeable closeable=targets.pop();
+    public void close() {
+        while (!targets.isEmpty()) {
+            Closeable closeable = targets.pop();
             try {
                 closeable.close();
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
         }
+        isClosed = true;
     }
 
     @Override
     protected void finalize() throws Throwable {
-        close();
+        if (!isClosed) close();
         super.finalize();
     }
 }

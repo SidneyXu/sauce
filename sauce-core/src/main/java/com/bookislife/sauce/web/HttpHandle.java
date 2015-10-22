@@ -4,16 +4,17 @@ import com.bookislife.sauce.SourceHandle;
 import com.bookislife.sauce.exception.SauceException;
 import com.bookislife.sauce.exception.SauceServerException;
 import com.bookislife.sauce.exception.SauceTimeoutException;
+import com.bookislife.sauce.utils.Capture;
+import com.bookislife.sauce.utils.Closer;
 import com.bookislife.sauce.utils.IOUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ public class HttpHandle extends SourceHandle {
     private int connectTimeout;
     private int readTimeout;
     private Map<String, String> headers;
+    private Map<String, String> query;
     private Map<String, String> params;
 
     private static final int DEFAULT_TIMEOUT = 15 * 1000;
@@ -47,95 +49,121 @@ public class HttpHandle extends SourceHandle {
 
     private StreamCallback streamCallback;
 
-    public HttpHandle(Builder builder) {
+    private HttpHandle(Builder builder) {
+        url = builder.url;
+        path = builder.path;
+        method = builder.method;
+        connectTimeout = builder.connectTimeout;
+        readTimeout = builder.readTimeout;
+        headers = builder.headers;
+        query = builder.query;
+        params = builder.params;
+        bufferSize = builder.bufferSize;
+    }
+
+    public static Builder from(String url) {
+        return new Builder(url);
+    }
+
+    public static Builder from(URL url) {
+        return new Builder(url);
     }
 
     abstract class RequestHandler {
-        abstract String beforeRequest(String basePath, Map<String, String> query);
+        abstract void handleResponse(InputStream responseStream,
+                                     int statusCode,
+                                     Map<String, String> headers,
+                                     String message) throws IOException;
 
-        abstract ResponseHandler handleResponse(byte[] response);
+        abstract void handleError(SauceException e);
+
+        void handleRequest(InputStream bodyStream, OutputStream serverStream) throws IOException {
+        }
     }
 
-    abstract class ResponseHandler {
-
-    }
-
-    public void test() {
-        //tdd develop
-        //        HttpHandle httpHandle = new HttpHandle(new HttpHandle.Builder());
-        //        httpHandle.request("http://jsonplaceholder.typicode.com",
-        //                METHOD_GET, JSONDocument.class, new RequestHandler() {
-        //
-        //                    @Override
-        //                    public String beforeRequest(String basePath, Map<String, String> query) {
-        //                        query.put("v", "1.0");
-        //                        query.put("q", "Calvin and Hobbes");
-        //                        return basePath + "/posts/1";
-        //                    }
-        //
-        //                    @Override
-        //                    ResponseHandler handleResponse(byte[] response) {
-        //                        return null;
-        //                    }
-        //                });
-    }
-
-    public void request(String url, String method, InputStream bodyStream, Class<?> returnType,
-                        RequestHandler requestHandler) throws SauceException {
-        HttpURLConnection connection = null;
-        OutputStream outputStream = null;
-        InputStream responseStream = null;
+    public String readString(String charset) throws SauceException {
+        byte[] data = readBytes();
+        if (null == data) return null;
         try {
-            connection = createConnection();
-            if (bodyStream != null && (METHOD_POST.equals(method) || METHOD_PUT.equals(method))) {
-                outputStream = connection.getOutputStream();
-                byte[] buffer = new byte[bufferSize];
-                int len;
-                while ((len = bodyStream.read(buffer)) > 0) {
-                    outputStream.write(buffer, 0, len);
-                }
-                outputStream.flush();
-                outputStream.close();
-                outputStream = null;
-            }
-
-            responseStream = getResponseStream(connection);
-
-            // TODO: 15/10/22  
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            IOUtils.copyTo(responseStream, byteArrayOutputStream, 1024);
-            byte[] data = byteArrayOutputStream.toByteArray();
-
-        } catch (SocketTimeoutException e) {
-            throw new SauceTimeoutException();
-        } catch (IOException e) {
-            throw new SauceException(e);
-        } finally {
-            if (null != bodyStream) {
-                try {
-                    bodyStream.close();
-                } catch (IOException e) {
-                }
-            }
-            if (null != outputStream) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                }
-            }
-            if (null != responseStream) {
-                try {
-                    responseStream.close();
-                } catch (IOException e) {
-                }
-            }
-            if (null != connection) {
-                connection.disconnect();
-            }
+            return new String(data, 0, data.length, charset);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 
     public byte[] readBytes() throws SauceException {
+        final Capture<SauceException> exceptionCapture = new Capture<>();
+        final Capture<byte[]> resultCapture = new Capture<>();
+        request(null, new RequestHandler() {
+            @Override
+            void handleResponse(final InputStream responseStream, final int statusCode,
+                                final Map<String, String> headers,
+                                final String message) throws IOException {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                IOUtils.copyTo(responseStream, outputStream, bufferSize);
+                resultCapture.set(outputStream.toByteArray());
+            }
+
+            @Override
+            void handleError(final SauceException e) {
+                exceptionCapture.set(e);
+            }
+        });
+        if (exceptionCapture.isNotNull()) {
+            throw exceptionCapture.get();
+        }
+        return resultCapture.get();
+    }
+
+    private void request(
+            InputStream bodyStream,
+            RequestHandler requestHandler) {
+        HttpURLConnection connection = null;
+        OutputStream outputStream;
+        InputStream responseStream;
+        Closer closer = new Closer(bodyStream);
+        try {
+            connection = createConnection();
+            if (bodyStream != null && (METHOD_POST.equals(method) || METHOD_PUT.equals(method))) {
+                outputStream = closer.wrap(connection.getOutputStream());
+                requestHandler.handleRequest(bodyStream, outputStream);
+            }
+
+            responseStream = closer.wrap(getResponseStream(connection));
+
+            Map<String, String> headers = new HashMap<>();
+            for (Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet()) {
+                if (null != entry.getKey() && !entry.getValue().isEmpty())
+                    headers.put(entry.getKey(), entry.getValue().get(0));
+            }
+            int statusCode = connection.getResponseCode();
+            String message = connection.getResponseMessage();
+            requestHandler.handleResponse(
+                    responseStream,
+                    statusCode,
+                    headers,
+                    message
+            );
+
+        } catch (SocketTimeoutException e) {
+            requestHandler.handleError(new SauceTimeoutException());
+        } catch (IOException e) {
+            int statusCode = -1;
+            if (null != connection) {
+                try {
+                    statusCode = connection.getResponseCode();
+                } catch (IOException ignored) {
+                }
+            }
+            requestHandler.handleError(new SauceServerException(statusCode, e));
+        } catch (SauceException e) {
+            requestHandler.handleError(e);
+        } finally {
+            closer.close();
+        }
+    }
+
+    public byte[] readBytes2() throws SauceException {
         HttpURLConnection connection = null;
         InputStream inputStream = null;
         try {
@@ -164,8 +192,8 @@ public class HttpHandle extends SourceHandle {
 
     private HttpURLConnection createConnection() throws IOException {
         URL url;
-        if (null != this.url) {
-            url = new URL(getRealPath());
+        if (null == this.url) {
+            url = new URL(getRealPath(path, query));
         } else {
             url = this.url;
         }
@@ -187,7 +215,8 @@ public class HttpHandle extends SourceHandle {
         return connection;
     }
 
-    private InputStream getResponseStream(HttpURLConnection connection) throws IOException, SauceException {
+    private InputStream getResponseStream(
+            HttpURLConnection connection) throws IOException, SauceException {
         InputStream inputStream = connection.getErrorStream();
         if (inputStream != null) {
             int len;
@@ -218,15 +247,15 @@ public class HttpHandle extends SourceHandle {
         return inputStream;
     }
 
-    private String getRealPath() {
-        String tempPath = path;
-        if (null != params && !params.isEmpty()) {
+    private String getRealPath(String basePath, Map<String, String> query) {
+        String tempPath = basePath;
+        if (null != query && !query.isEmpty()) {
             StringBuilder sb = new StringBuilder();
-            for (Map.Entry<String, String> entry : params.entrySet()) {
+            for (Map.Entry<String, String> entry : query.entrySet()) {
                 sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
             }
             sb.deleteCharAt(sb.length() - 1);
-            tempPath = path + "?" + sb.toString();
+            tempPath = basePath + "?" + sb.toString();
         }
         return tempPath;
     }
@@ -240,12 +269,25 @@ public class HttpHandle extends SourceHandle {
     public static class Builder {
         private URL url;
         private String path;
-        private String method;
-        private int connectTimeout;
-        private int readTimeout;
+        private String method = METHOD_GET;
+        private int connectTimeout = DEFAULT_TIMEOUT;
+        private int readTimeout = DEFAULT_TIMEOUT;
         private Map<String, String> headers;
+        private Map<String, String> query;
         private Map<String, String> params;
-        private int bufferSize;
+        private int bufferSize = DEFAULT_BUFFER_SIZE;
+
+        public Builder(URL url) {
+            this.url = url;
+        }
+
+        public Builder(String url) {
+            this.path = url;
+        }
+
+        public static Builder from(URL url) {
+            return new Builder(url);
+        }
 
         public Builder connectTimeout(int connectTimeout) {
             if (connectTimeout > 0) this.connectTimeout = connectTimeout;
@@ -288,7 +330,33 @@ public class HttpHandle extends SourceHandle {
             return this;
         }
 
-        public Builder param(String key, String value) {
+        public Builder path(String subPath) {
+            path += subPath;
+            return this;
+        }
+
+        public Builder query(String key, String value) {
+            if (query == null) {
+                query = new HashMap<String, String>();
+            }
+            query.put(key, value);
+            return this;
+        }
+
+        public Builder queryWithUTF8(String key, String value) {
+            try {
+                return query(key, URLEncoder.encode(value, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public Builder query(Map<String, String> query) {
+            this.query = query;
+            return this;
+        }
+
+        public Builder params(String key, String value) {
             if (params == null) {
                 params = new HashMap<String, String>();
             }
@@ -299,6 +367,10 @@ public class HttpHandle extends SourceHandle {
         public Builder params(Map<String, String> params) {
             this.params = params;
             return this;
+        }
+
+        public HttpHandle build() {
+            return new HttpHandle(this);
         }
 
     }
