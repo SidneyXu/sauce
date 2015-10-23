@@ -32,7 +32,4 @@ public class SauceException extends Exception {
         return msg;
     }
 
-    public boolean isError() {
-        return code != 0;
-    }
 }

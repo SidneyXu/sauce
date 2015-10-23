@@ -1,7 +1,7 @@
 package com.bookislife.sauce.utils;
 
 /**
- * Created by mrseasons on 2015/10/22.
+ * Created by SidneyXu on 2015/10/22.
  */
 public class Capture<T> {
 

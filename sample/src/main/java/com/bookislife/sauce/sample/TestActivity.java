@@ -19,30 +19,30 @@ public class TestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.click1).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                try {
-                    FileOutputStream fileOutputStream = openFileOutput("test.txt", MODE_PRIVATE);
-                    fileOutputStream.write("hello world".getBytes());
-                    fileOutputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        findViewById(R.id.click2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                try {
-                    ((AndroidFileHandles) Sauce.files).files("foo.txt").writeString("hello world");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
+//        findViewById(R.id.click1).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(final View v) {
+//                try {
+//                    FileOutputStream fileOutputStream = openFileOutput("test.txt", MODE_PRIVATE);
+//                    fileOutputStream.write("hello world".getBytes());
+//                    fileOutputStream.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//
+//        findViewById(R.id.click2).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(final View v) {
+//                try {
+//                    ((AndroidFileHandles) Sauce.files).files("foo.txt").writeString("hello world");
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        });
     }
 
 

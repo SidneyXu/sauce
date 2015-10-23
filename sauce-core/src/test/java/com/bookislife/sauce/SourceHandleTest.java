@@ -2,10 +2,11 @@ package com.bookislife.sauce;
 
 
 import junit.framework.TestCase;
-import static org.assertj.core.api.Assertions.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Created by mrseasons on 2015/09/11.
+ * Created by SidneyXu on 2015/09/11.
  */
 public class SourceHandleTest extends TestCase {
 
