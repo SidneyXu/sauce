@@ -109,7 +109,7 @@ artifacts {
 }
 
 //maven central
-apply from: '../dev_publish.gradle'
+apply from: '../maven_publish.gradle'
 
 //region Coveralls
 
