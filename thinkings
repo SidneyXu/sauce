@@ -6,6 +6,28 @@ Sauce.files.internal(path)
 ((AndroidFileHandles)Sauce.files).assets(path)
 => SauceAndroid.files.assets(path)
 
+var target = File(filepath + ".copy")
+source.copyRecursively(target) { file, e ->
+    OnErrorAction.SKIP
+}
+
+rename to using
+source.outputStream().use {
+    it.write("hello kotlin".toByteArray())
+}
+
+source.bufferedReader().use {
+    it.lineSequence()
+            .filter(String::isNotBlank)
+            .forEach { println(it) }
+}
+source.bufferedReader().useLines {
+    it.filter(String::isNotBlank).toList()
+}
+
+val url = URL("http://weather.livedoor.com/forecast/webservice/json/v1?city=400040")
+println("response: ${url.readText()}")
+
 2.Image
 ImageProvider provider = Sauce.getProvider(ImageProvider)
 
