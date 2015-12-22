@@ -134,4 +134,9 @@ public class ManifestUtils {
         }
         return false;
     }
+
+    public static boolean isIntentSupported(Context context, Intent intent) {
+        PackageManager packageManager = context.getPackageManager();
+        return intent.resolveActivity(packageManager) != null;
+    }
 }

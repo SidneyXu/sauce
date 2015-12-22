@@ -588,11 +588,11 @@ public class AndroidFileHandle extends FileHandle {
     }
 
     @Override
-    public boolean moveDirectoryTo(FileHandle target) {
+    public boolean moveRecursively(FileHandle target) {
         if (target.exists()) {
             return false;
         }
-        boolean success = copyDirectoryTo(target);
+        boolean success = copyRecursively(target);
         if (success) {
             deleteDirectory();
             file = target.toFile();
@@ -614,7 +614,7 @@ public class AndroidFileHandle extends FileHandle {
     }
 
     @Override
-    public boolean copyDirectoryTo(FileHandle target) {
+    public boolean copyRecursively(FileHandle target) {
         if (isDirectory() && exists()) {
             target.mkdirs();
             FileHandle[] handles = listHandles();
@@ -622,7 +622,7 @@ public class AndroidFileHandle extends FileHandle {
                 FileHandle newHandle = new AndroidFileHandle(new File(target.toFile(),
                         fh.toFile().getName()));
                 if (fh.isDirectory()) {
-                    fh.copyDirectoryTo(newHandle);
+                    fh.copyRecursively(newHandle);
                 } else {
                     fh.copyTo(newHandle);
                 }
@@ -636,7 +636,15 @@ public class AndroidFileHandle extends FileHandle {
     public String extension() {
         String name = file.getName();
         int dotIndex = name.lastIndexOf('.');
-        if (dotIndex == -1) return name;
+        if (dotIndex == -1 || dotIndex == name.length() - 1) return "";
+        return name.substring(dotIndex + 1, name.length());
+    }
+
+    @Override
+    public String nameWithoutExtension() {
+        String name = file.getName();
+        int dotIndex = name.lastIndexOf('.');
+        if (dotIndex == -1) return "";
         return name.substring(0, dotIndex);
     }
 

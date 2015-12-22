@@ -124,14 +124,6 @@ public abstract class FileHandle extends SourceHandle {
     public abstract void writeBytes(byte[] data) throws IOException;
 
     /**
-     * Read bytes from the source.
-     *
-     * @return the read bytes or null if source is empty
-     * @throws IOException
-     */
-    public abstract byte[] readBytes() throws IOException;
-
-    /**
      * Try to write some bytes to the source.
      *
      * @param data the bytes for writing
@@ -181,14 +173,6 @@ public abstract class FileHandle extends SourceHandle {
     public abstract boolean tryWriteString(String data, String encoding);
 
     /**
-     * Read string from the source.
-     *
-     * @return the read string or null if source is empty
-     * @throws IOException
-     */
-    public abstract String readString() throws IOException;
-
-    /**
      * Read string with the specified encoding from the source.
      *
      * @param encoding the encoding for parsing the string
@@ -196,13 +180,6 @@ public abstract class FileHandle extends SourceHandle {
      * @throws IOException
      */
     public abstract String readString(String encoding) throws IOException;
-
-    /**
-     * Try to read string from the source.
-     *
-     * @return the read string or null if source is empty or any error occurs.
-     */
-    public abstract String tryReadString();
 
     /**
      * Try to read string from the source with the specified encoding.
@@ -232,12 +209,14 @@ public abstract class FileHandle extends SourceHandle {
 
     public abstract boolean moveTo(FileHandle target);
 
-    public abstract boolean moveDirectoryTo(FileHandle target);
+    public abstract boolean moveRecursively(FileHandle target);
 
     public abstract boolean copyTo(FileHandle target);
 
-    public abstract boolean copyDirectoryTo(FileHandle target);
+    public abstract boolean copyRecursively(FileHandle target);
 
     public abstract String extension();
+
+    public abstract String nameWithoutExtension();
 
 }
