@@ -3,6 +3,7 @@ package com.bookislife.sauce.utils;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -13,6 +14,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
 /**
@@ -108,5 +110,51 @@ public class DeviceUtils {
             macAddress = info.getMacAddress().replaceAll(":", "");
         }
         return macAddress;
+    }
+
+    /**
+     * Check whether the app is installed from Google Play for security.
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isInstallFromGooglePlay(Context context) {
+        String installerPackageName = context.getPackageManager()
+                .getInstallerPackageName(context.getPackageName());
+        return installerPackageName != null
+                && installerPackageName.startsWith("com.google.android");
+    }
+
+    /**
+     * Check whether the app is debuggable for security.
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isDebuggable(Context context) {
+        return (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+    }
+
+    /**
+     * Check whether the app is running on an emulator for security.
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isEmulator(Context context) {
+        try {
+            Class systemPropertyClazz = Class.forName("android.os.SystemProperties");
+            boolean kernelQemu = getProperty(systemPropertyClazz, "ro.kernel.qemu").length() > 0;
+            boolean hardwareGoldfish = getProperty(systemPropertyClazz, "ro.hardware").equals("goldfish");
+            boolean modelSdk = getProperty(systemPropertyClazz, "ro.product.model").equals("sdk");
+            return kernelQemu || hardwareGoldfish || modelSdk;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static String getProperty(Class systemPropertyClazz, String propertyName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        return (String) systemPropertyClazz.getMethod("get", new Class[]{String.class})
+                .invoke(systemPropertyClazz, new Object[]{propertyName});
     }
 }
