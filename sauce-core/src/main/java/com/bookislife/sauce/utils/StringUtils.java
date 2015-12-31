@@ -48,5 +48,21 @@ public class StringUtils {
         return new String(hexChars);
     }
 
+    public static String fillWith(String str, int size,
+                                  char filled) {
+        String tmp = str;
+        if (tmp.length() >= size) {
+            return str;
+        }
+        while (tmp.length() < size) {
+            tmp = filled + tmp;
+        }
+        return str;
+    }
+
+    public static String fillWith(int num, int size,
+                                  char filled) {
+        return fillWith("" + num, size, filled);
+    }
 
 }

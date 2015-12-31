@@ -1,6 +1,7 @@
 package com.bookislife.sauce.web;
 
 import com.bookislife.sauce.exception.SauceException;
+import com.bookislife.sauce.net.HttpHandle;
 import junit.framework.TestCase;
 
 /**

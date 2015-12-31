@@ -36,4 +36,8 @@ public class CollectionUtils {
         }
         return sb.toString();
     }
+
+    public static String[] divide(String str, String sign) {
+        return str.split(sign, -1);
+    }
 }
