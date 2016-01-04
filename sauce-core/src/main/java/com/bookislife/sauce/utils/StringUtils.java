@@ -65,4 +65,20 @@ public class StringUtils {
         return fillWith("" + num, size, filled);
     }
 
+    public static char[] randomChars(int length) {
+        char[] arr = new char[length];
+        int count = 0;
+        Outer:
+        while (count < length) {
+            char c = (char) (Math.random() * 26 + 'a');
+            for (char ch : arr) {
+                if (ch == c) {
+                    continue Outer;
+                }
+            }
+            arr[count++] = c;
+        }
+        return arr;
+    }
+
 }

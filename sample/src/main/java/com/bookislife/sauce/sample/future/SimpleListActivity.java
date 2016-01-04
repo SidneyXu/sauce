@@ -27,7 +27,7 @@ public abstract class SimpleListActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FrameLayout container = new FrameLayout(this);
-        container.setId(1);
+        container.setId(id);
         setContentView(container);
 
         replace(getFragment());
@@ -79,7 +79,7 @@ public abstract class SimpleListActivity extends AppCompatActivity {
                     startActivity(it);
 
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         };
