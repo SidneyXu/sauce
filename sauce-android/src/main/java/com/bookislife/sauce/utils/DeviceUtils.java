@@ -157,4 +157,22 @@ public class DeviceUtils {
         return (String) systemPropertyClazz.getMethod("get", new Class[]{String.class})
                 .invoke(systemPropertyClazz, new Object[]{propertyName});
     }
+
+    public static int dip2px(Context context, float dip) {
+        float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (scale * dip + 0.5f);
+    }
+
+    public static int px2dip(Context context, float px) {
+        float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (px / scale + 0.5f);
+    }
+
+    public static int getHeight(Context context) {
+        return context.getResources().getDisplayMetrics().heightPixels;
+    }
+
+    public static int getWidth(Context context) {
+        return context.getResources().getDisplayMetrics().widthPixels;
+    }
 }
