@@ -2,6 +2,12 @@ package com.bookislife.sauce.utils;
 
 import android.content.Context;
 import android.graphics.*;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 /**
  * Created by SidneyXu on 2016/01/05.
@@ -92,4 +98,89 @@ public class ImageDecoder {
         }
     }
 
+    public static void cleanImageView(ImageView imageView) {
+        if (!(imageView.getDrawable() instanceof BitmapDrawable))
+            return;
+
+        // clean up the view's image for the sake of memory
+        BitmapDrawable b = (BitmapDrawable) imageView.getDrawable();
+        b.getBitmap().recycle();
+        imageView.setImageDrawable(null);
+    }
+
+    public static Bitmap flipBitmap(Bitmap bitmap, boolean horizontal) {
+        float[] values;
+        if (horizontal) {
+            values = new float[]{-1f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 1f};
+        } else {
+            values = new float[]{1f, 0f, 0f, 0f, -1f, 0f, 0f, 0f, 1f};
+        }
+
+        Matrix matrix = new Matrix();
+        matrix.setValues(values);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    }
+
+    public static Bitmap rotateBitamp(Bitmap bitmap, float degree) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+        return Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+    }
+
+    public static byte[] BitmapToBytes(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        return baos.toByteArray();
+    }
+
+    public static Drawable byteToDrawable(byte[] byteArray) {
+        ByteArrayInputStream ins = new ByteArrayInputStream(byteArray);
+        return Drawable.createFromStream(ins, null);
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap = Bitmap
+                .createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888
+                                : Bitmap.Config.RGB_565);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
+
+    public static Bitmap toGrayscaleImage(Bitmap bitmap) {
+        int width, height;
+        height = bitmap.getHeight();
+        width = bitmap.getWidth();
+        Bitmap target = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        Canvas canvas = new Canvas(target);
+        Paint paint = new Paint();
+        ColorMatrix colorMatrix = new ColorMatrix();
+        colorMatrix.setSaturation(0);
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(colorMatrix);
+        paint.setColorFilter(filter);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+        return target;
+    }
+
+    public static Bitmap toRoundCornerImage(Bitmap bitmap, int pixels, int color) {
+        Bitmap target = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(target);
+        Paint paint = new Paint();
+        Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        RectF rectF = new RectF(rect);
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawRoundRect(rectF, pixels, pixels, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        return target;
+    }
 }

@@ -13,6 +13,10 @@ public class IntentHelper {
         return new EmailBuilder(context);
     }
 
+    public static boolean isActivitySupported(Context context, Intent intent) {
+        return intent.resolveActivity(context.getPackageManager()) != null;
+    }
+
     public static abstract class Builder {
         protected Context context;
 

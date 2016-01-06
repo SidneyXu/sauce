@@ -2,6 +2,7 @@ package com.bookislife.sauce.utils;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -10,11 +11,13 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
+import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -48,10 +51,17 @@ public class DeviceUtils {
         return Locale.getDefault().getCountry();
     }
 
-    public static String getResolution(final Context context) {
+    public static String getResolution(Context context) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         return metrics.widthPixels + "*"
                 + metrics.heightPixels;
+    }
+
+    public static String getCarrier(Context context) {
+        TelephonyManager telephonyManager = (TelephonyManager) context
+                .getSystemService(Context.TELEPHONY_SERVICE);
+
+        return telephonyManager.getNetworkOperator();
     }
 
     public static void hideSoftInput(Activity activity) {
@@ -111,6 +121,40 @@ public class DeviceUtils {
         }
         return macAddress;
     }
+
+    public static String getWifiIpAddress(Context context) {
+        if (!ManifestUtils.hasPermission(context, Manifest.permission.ACCESS_WIFI_STATE)) {
+            return null;
+        }
+        WifiManager wifi = ((WifiManager) context.getSystemService(Context.WIFI_SERVICE));
+        WifiInfo info = wifi.getConnectionInfo();
+        return convertIntToIp(info.getIpAddress());
+    }
+
+    private static String convertIntToIp(int paramInt) {
+        if (paramInt == 0) return "";
+        return (paramInt & 0xFF) + "." + (0xFF & paramInt >> 8) + "."
+                + (0xFF & paramInt >> 16) + "." + (0xFF & paramInt >> 24);
+    }
+
+    public static boolean isRunningInBackground(Context context) {
+        String packageName = context.getPackageName();
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (activityManager == null) {
+            return false;
+        }
+        List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfos = activityManager.getRunningAppProcesses();
+        if (runningAppProcessInfos == null || runningAppProcessInfos.isEmpty()) {
+            return false;
+        }
+        for (ActivityManager.RunningAppProcessInfo info : runningAppProcessInfos) {
+            if (info.processName.equals(packageName) && info.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Check whether the app is installed from Google Play for security.
