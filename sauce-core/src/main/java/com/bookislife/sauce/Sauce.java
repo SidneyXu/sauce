@@ -26,4 +26,8 @@ public class Sauce {
     public static SaucePlatform getPlatform() {
         return platform;
     }
+
+    public static <T> T getPlatform(Class<? extends SaucePlatform> clazz) {
+        return (T) clazz.cast(getPlatform());
+    }
 }

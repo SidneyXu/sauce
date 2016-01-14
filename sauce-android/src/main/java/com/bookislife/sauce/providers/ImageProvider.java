@@ -14,6 +14,7 @@ public abstract class ImageProvider extends Providers {
     protected Context context;
     protected AndroidFileHandle fileHandle;
 
+
     public ImageProvider(Context context) {
         this.context = context;
     }
@@ -26,7 +27,12 @@ public abstract class ImageProvider extends Providers {
                 .load(fileHandle.toUri());
     }
 
-    static class ImageRequest {
+    public ImageRequest load(String url) {
+        return new ImageRequest(this)
+                .load(Uri.parse(url));
+    }
+
+    public static class ImageRequest {
 
         Uri uri;
         Drawable placeHolder;
@@ -57,8 +63,37 @@ public abstract class ImageProvider extends Providers {
 
     public static class ImageProviderSelector {
 
+        public static final int GLIDE = 1;
+        public static final int PICASSO = 2;
+        public static final int DEFAULT = 0;
+
+        public static int type = DEFAULT;
+
         public ImageProvider getImageProvider(Context context) {
-            return new GlideImageProvider(context);
+            switch (type) {
+                case 0:
+                    try {
+                        Class.forName("com.bumptech.glide.Glide");
+                        return new GlideImageProvider(context);
+                    } catch (ClassNotFoundException ignored) {
+                    }
+                    try {
+                        Class.forName("com.squareup.picasso.Picasso");
+                        return new PicassoImageProvider(context);
+                    } catch (ClassNotFoundException ignored) {
+                    }
+                    break;
+                case GLIDE:
+                    return new GlideImageProvider(context);
+                case PICASSO:
+                    return new PicassoImageProvider(context);
+            }
+            throw new IllegalStateException("Glide or Picasso is needed.");
         }
+
+        public static void select(int type) {
+            ImageProviderSelector.type = type;
+        }
+
     }
 }

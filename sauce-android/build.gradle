@@ -53,6 +53,8 @@ dependencies {
     compile project(":sauce-core")
     //test
     provided 'com.github.bumptech.glide:glide:3.6.1'
+    provided 'com.squareup.picasso:picasso:2.5.2'
+
     //    provided 'com.android.support:support-v4:19.1.0'
     provided 'com.squareup.okhttp:okhttp:2.4.0'
 

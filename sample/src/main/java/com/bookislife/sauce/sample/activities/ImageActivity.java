@@ -48,16 +48,23 @@ public class ImageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
 
-//        sauceAndroid= (SauceAndroid) Sauce.getPlatform();
-//        final ImageProvider imageProvider= (ImageProvider) sauceAndroid.getProviders(SauceAndroid.IMAGE_PROVIDER);
-//
-//        final ImageView imageView = (ImageView) findViewById(R.id.image);
-//        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String url = getUrl();
+        sauceAndroid = Sauce.getPlatform(SauceAndroid.class);
+        final ImageProvider imageProvider = (ImageProvider) sauceAndroid.getProviders(this, SauceAndroid.IMAGE_PROVIDER);
+
+        final ImageView imageView = (ImageView) findViewById(R.id.image);
+        findViewById(R.id.button).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String url = getUrl();
+                        System.out.println(url);
+
+                        imageProvider.load(url).into(imageView);
+
 //                imageProvider.load((AndroidFileHandle) sauceAndroid.files.internal("404.jpg"));
-//            }
-//        });
+                    }
+                }
+
+        );
     }
 }
