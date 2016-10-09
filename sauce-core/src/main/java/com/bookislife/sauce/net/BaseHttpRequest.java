@@ -1,5 +1,6 @@
 package com.bookislife.sauce.net;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 
@@ -28,11 +29,33 @@ public class BaseHttpRequest {
     }
 
     public static class Body {
+        protected static final String PROTOCOL_CHARSET = "utf-8";
+        private static final String CONTENT_TYPE_JSON =
+                String.format("application/json; charset=%s", PROTOCOL_CHARSET);
+        private static final String CONTENT_TYPE_FORM =
+                String.format("application/x-www-form-urlencoded; charset=%s", PROTOCOL_CHARSET);
+
+
         private String contentType;
+
+        private InputStream inputStream;
+        private byte[] data;
 
         public String getContentType() {
             return contentType;
         }
+
+        public boolean isJson() {
+            return contentType.contains(CONTENT_TYPE_JSON);
+        }
+
+        public Body fromJson(byte[] data) {
+            this.data = data;
+            this.contentType = CONTENT_TYPE_JSON;
+            return this;
+        }
+
+
     }
 
     public URL getUrl() {

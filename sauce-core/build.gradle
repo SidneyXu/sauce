@@ -19,9 +19,20 @@ repositories {
     mavenCentral()
 }
 
+//configurations {
+//    provided
+//}
+//
+////sourceSets {
+////    main {
+////        compileClasspath += configurations.provided
+////    }
+////}
+
 dependencies {
     testCompile 'junit:junit:4.11'
     testCompile 'org.assertj:assertj-core:1.1.0'
+    compile 'com.squareup.okhttp3:okhttp:3.1.2'
 }
 
 task javadocs(type: Javadoc) {
